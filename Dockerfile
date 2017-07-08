@@ -23,5 +23,7 @@ VOLUME ["/var/lib/mpd", "/media/music"]
 COPY mpd.conf /etc/mpd.conf
 
 EXPOSE 6600
+EXPOSE 8800
+EXPOSE 8000
 
 CMD ["mpd", "--stdout", "--no-daemon"]
