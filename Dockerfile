@@ -15,12 +15,8 @@ RUN apk -q update \
     && apk -q --no-progress add alsa-utils \
     && rm -rf /var/cache/apk/*
 
-RUN mkdir -p /var/lib/mpd/music \
-    && mkdir -p /var/lib/mpd/playlists \
-    && mkdir -p /var/lib/mpd/database \
-    && mkdir -p /var/log/mpd/mpd.log \
-    && chown -R ${user}:${group} /var/lib/mpd \
-    && chown -R ${user}:${group} /var/log/mpd/mpd.log
+RUN mkdir -p /var/lib/mpd/playlists \
+    && chown -R ${user}:${group} /var/lib/mpd
 
 VOLUME ["/var/lib/mpd", "/media/music"]
 
