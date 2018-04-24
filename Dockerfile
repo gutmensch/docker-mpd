@@ -1,9 +1,9 @@
-FROM alpine:3.6
+FROM alpine:edge
 # copied in most parts from https://github.com/VITIMan/docker-music-stack/blob/master/mpd
 MAINTAINER @gutmensch https://github.com/gutmensch
 
-ENV MPD_VERSION 0.20.8-r0
-ENV MPC_VERSION 0.28-r0
+ENV MPD_VERSION 0.20.18-r1
+ENV MPC_VERSION 0.29-r0
 
 # https://docs.docker.com/engine/reference/builder/#arg
 ARG user=mpd
@@ -20,7 +20,7 @@ RUN mkdir -p /var/lib/mpd/playlists \
 
 VOLUME ["/var/lib/mpd", "/media/music"]
 
-COPY mpd.conf /etc/mpd.conf
+COPY ./manifest/ /
 
 EXPOSE 6600
 EXPOSE 8800
