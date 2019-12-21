@@ -1,9 +1,9 @@
-FROM alpine:edge
+FROM alpine:3.11
 # copied in most parts from https://github.com/VITIMan/docker-music-stack/blob/master/mpd
 MAINTAINER @gutmensch https://github.com/gutmensch
 
-ENV MPD_VERSION 0.20.18-r1
-ENV MPC_VERSION 0.29-r0
+ENV MPD_VERSION 0.21.16-r1
+ENV MPC_VERSION 0.33-r0
 
 # https://docs.docker.com/engine/reference/builder/#arg
 ARG user=mpd
