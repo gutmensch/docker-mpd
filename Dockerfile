@@ -1,24 +1,20 @@
 FROM alpine:3.10
+
 # copied in most parts from https://github.com/VITIMan/docker-music-stack/blob/master/mpd
-MAINTAINER @gutmensch https://github.com/gutmensch
+# start on qnap with
+# docker run -d  --cpus ".2" --memory 256mb --cap-add SYS_NICE --net host -v var-lib-mpd:/var/lib/mpd -v /share/Music:/media/music:ro --device=/dev/snd:/dev/snd --name mpd-1 --restart always gutmensch/mpd:latest
+# and enable rt scheduling first on qnap with sysctl -w kernel.sched_rt_runtime_us=-1
 
-#ENV MPD_VERSION 0.21.16-r1
-#ENV MPC_VERSION 0.33-r0
+LABEL maintainer="@gutmensch https://github.com/gutmensch"
 
-# https://docs.docker.com/engine/reference/builder/#arg
-ARG user=mpd
-ARG group=audio
-
+# running as user mpd not possible on qnap because
+# /dev/snd rights wrong, audio group missing
 RUN apk -q update \
-#    && apk -q --no-progress add mpd="$MPD_VERSION" \
-#    && apk -q --no-progress add mpc="$MPC_VERSION" \
     && apk -q --no-progress add mpd \
     && apk -q --no-progress add mpc \
     && apk -q --no-progress add alsa-utils \
-    && rm -rf /var/cache/apk/*
-
-RUN mkdir -p /var/lib/mpd/playlists \
-    && chown -R ${user}:${group} /var/lib/mpd
+    && rm -rf /var/cache/apk/* \
+    && mkdir -p /var/lib/mpd/playlists
 
 VOLUME ["/var/lib/mpd", "/media/music"]
 
@@ -26,6 +22,5 @@ COPY ./manifest/ /
 
 EXPOSE 6600
 EXPOSE 8800
-EXPOSE 8000
 
-CMD ["mpd", "--stdout", "--no-daemon"]
+CMD ["mpd", "--stdout", "--verbose", "--no-daemon", "/etc/mpd.conf"]
