@@ -22,5 +22,6 @@ COPY ./manifest/ /
 
 EXPOSE 6600
 EXPOSE 8800
+EXPOSE 8000
 
 CMD ["mpd", "--stdout", "--no-daemon", "/etc/mpd.conf"]
