@@ -1,0 +1,2 @@
+#!/usr/bin/execlineb -P
+ympd --host localhost --port 6600 --webport 6666 --user mpd

@@ -7,10 +7,15 @@ FROM alpine:3.10
 
 LABEL maintainer="@gutmensch https://github.com/gutmensch"
 
+# install s6 for mpd and ympd
+ADD https://github.com/just-containers/s6-overlay/releases/download/v1.22.1.0/s6-overlay-amd64.tar.gz /tmp/
+RUN tar xzf /tmp/s6-overlay-amd64.tar.gz -C /
+
 # running as user mpd not possible on qnap because
 # /dev/snd rights wrong, audio group missing
 RUN apk -q update \
     && apk -q --no-progress add mpd \
+    && apk -q --no-progress add ympd \
     && apk -q --no-progress add mpc \
     && apk -q --no-progress add alsa-utils \
     && rm -rf /var/cache/apk/* \
@@ -23,5 +28,6 @@ COPY ./manifest/ /
 EXPOSE 6600
 EXPOSE 8800
 EXPOSE 8000
+EXPOSE 6666
 
-CMD ["mpd", "--stdout", "--no-daemon", "/etc/mpd.conf"]
+ENTRYPOINT ["/init"]
