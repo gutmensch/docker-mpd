@@ -1,5 +1,9 @@
 FROM alpine:3.11 AS builder
 
+ARG CHROMAPRINT_VERSION=1.4.3
+ARG OPUS_VERSION=1.3.1
+ARG OPUSENC_VERSION=0.2.1
+ARG TWOLAME_VERSION=0.4.0
 ARG AUDIOFILE_VERSION=0.3.6
 ARG MPD_VERSION=0.20.23
 
@@ -10,6 +14,7 @@ RUN apk update \
 	autoconf \
 	automake \
 	libtool \
+        meson \
 	libmpdclient-dev \
 	libvorbis-dev \
 	libsamplerate-dev \
@@ -31,9 +36,61 @@ RUN apk update \
 	wavpack-dev \
 	sndio-dev \
 	libmodplug-dev \
-	libcdio-paranoia-dev \
 	yajl-dev \
-	libshout-dev
+	libshout-dev \
+	pcre-dev \
+	zziplib-dev \
+	libgcrypt-dev \
+	libmms-dev \
+	icu-dev \
+	libnfs-dev \
+	wget
+
+ADD https://github.com/tatsuz/musepack/archive/master.zip /
+RUN cd / \
+  && unzip master.zip \
+  && rm -f master.zip \
+  && cd musepack-master \
+  && wget http://deb.debian.org/debian/pool/main/libm/libmpc/libmpc_0.1~r495-1.debian.tar.xz \
+  && tar xvf libmpc_0.1~r495-1.debian.tar.xz \
+  && for i in $(cat debian/patches/series); do echo $i; patch -p1 < debian/patches/$i; done \
+  && libtoolize --force \
+  && aclocal \
+  && autoheader \
+  && automake --force-missing --add-missing \
+  && autoconf \
+  && ./configure --prefix=/usr \
+  && make DESTDIR=/build install \
+  && cp -av /build/* /
+
+ADD https://github.com/acoustid/chromaprint/releases/download/v${CHROMAPRINT_VERSION}/chromaprint-${CHROMAPRINT_VERSION}.tar.gz /
+RUN tar xzf /chromaprint-${CHROMAPRINT_VERSION}.tar.gz -C / \
+  && cd /chromaprint-v${CHROMAPRINT_VERSION} \
+  && libtoolize --force \
+  && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=ON . \
+  && make DESTDIR=/build install \
+  && cp -av /build/* /
+
+ADD https://archive.mozilla.org/pub/opus/opus-${OPUS_VERSION}.tar.gz /
+RUN tar xzf /opus-${OPUS_VERSION}.tar.gz -C / \
+  && cd /opus-${OPUS_VERSION} \
+  && ./configure --prefix=/usr --disable-static --disable-doc --disable-extra-programs --enable-custom-modes \
+  && make DESTDIR=/build install \
+  && cp -av /build/* /
+
+ADD https://archive.mozilla.org/pub/opus/libopusenc-${OPUSENC_VERSION}.tar.gz /
+RUN tar xzf /libopusenc-${OPUSENC_VERSION}.tar.gz -C / \
+  && cd /libopusenc-${OPUSENC_VERSION} \
+  && ./configure --prefix=/usr --disable-static --disable-doc --disable-examples \
+  && make DESTDIR=/build install \
+  && cp -av /build/* /
+
+RUN wget http://downloads.sourceforge.net/twolame/twolame-${TWOLAME_VERSION}.tar.gz -O /twolame-${TWOLAME_VERSION}.tar.gz \
+  && tar xzf /twolame-${TWOLAME_VERSION}.tar.gz -C / \
+  && cd /twolame-${TWOLAME_VERSION} \
+  && ./configure --prefix=/usr --disable-static \
+  && make DESTDIR=/build install \
+  && cp -av /build/* /
 
 ADD https://audiofile.68k.org/audiofile-${AUDIOFILE_VERSION}.tar.gz /
 ENV CXXFLAGS=-fpermissive
@@ -44,11 +101,12 @@ RUN tar xzf /audiofile-${AUDIOFILE_VERSION}.tar.gz -C / \
   && cp -av /build/* /
 
 ADD https://github.com/MusicPlayerDaemon/MPD/archive/v${MPD_VERSION}.tar.gz /
+ENV DESTDIR=/build
 RUN tar xzf /v${MPD_VERSION}.tar.gz -C / \
   && cd /MPD-${MPD_VERSION} \
-  && sh ./autogen.sh \
-  && ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --runstatedir=/run \
-  && make DESTDIR=/build install \
+  && bash -c '[ -f autogen.sh ] && ./autogen.sh || true' \
+  && bash -c '[ -f configure ] && ./configure --enable-dsd --prefix=/usr --sysconfdir=/etc --localstatedir=/var --runstatedir=/run && make DESTDIR=/build install || true' \
+  && bash -c '[ -f meson.build ] && meson --prefix=/usr --sysconfdir=/etc --localstatedir=/var build && cd build && ninja && ninja install || true' \
   && mkdir -p /build/var/lib/mpd/playlists
 
 FROM alpine:3.11 AS runner
@@ -88,10 +146,15 @@ RUN apk -q update \
 	soxr \
 	lame \
 	wavpack \
+	pcre \
 	sqlite-libs \
-	libcdio \
-	libcdio-paranoia \
 	libmodplug \
+	zziplib \
+	libgcrypt \
+	libmms \
+	icu-libs \
+	libnfs \
+	libcdio \
     && apk -q --no-progress add ympd \
     && apk -q --no-progress add mpc \
     && apk -q --no-progress add alsa-utils \
