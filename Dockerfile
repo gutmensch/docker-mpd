@@ -1,5 +1,6 @@
 FROM alpine:3.11 AS builder
 
+ARG WILDMIDI_VERSION=0.4.3
 ARG CHROMAPRINT_VERSION=1.4.3
 ARG OPUS_VERSION=1.3.1
 ARG OPUSENC_VERSION=0.2.1
@@ -60,6 +61,14 @@ RUN cd / \
   && automake --force-missing --add-missing \
   && autoconf \
   && ./configure --prefix=/usr \
+  && make DESTDIR=/build install \
+  && cp -av /build/* /
+
+ADD https://github.com/Mindwerks/wildmidi/archive/wildmidi-${WILDMIDI_VERSION}.tar.gz /
+RUN tar xzf /wildmidi-${WILDMIDI_VERSION}.tar.gz -C / \
+  && cd /wildmidi-wildmidi-${WILDMIDI_VERSION} \
+  && libtoolize --force \
+  && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=ON . \
   && make DESTDIR=/build install \
   && cp -av /build/* /
 
