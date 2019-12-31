@@ -164,9 +164,9 @@ RUN apk -q update \
 	icu-libs \
 	libnfs \
 	libcdio \
-    && apk -q --no-progress add ympd \
-    && apk -q --no-progress add mpc \
-    && apk -q --no-progress add alsa-utils \
+	ympd \
+	mpc \
+	alsa-utils \
     && rm -rf /var/cache/apk/* \
     && mkdir -p /var/lib/mpd/playlists
 

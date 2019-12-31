@@ -2,6 +2,19 @@
 
 mpd - music player daemon
 
+Caution: This is for personal use mostly! 0.21.x is causing buffer underruns in my setup, hence sticking with 0.20.x now.
+
+Goals:
+
+- Use USB optical out device on QNAP in Docker Container
+
+- Support MPC and most other audio formats
+
+- Forget about SMB and NFS (mount in Container anyway)
+
+- Have frontend for mpd deployed as well (s6 + ympd)
+
+
 ## Usage
 ```
 docker pull gutmensch/mpd
