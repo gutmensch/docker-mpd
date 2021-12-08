@@ -25,6 +25,6 @@ node {
     }
 
     stage('schedule cleanup') {
-        build job: '../Cleanup/dangling-container-cleanup', wait: false
+        build job: '../Maintenance/dangling-container-cleanup', wait: false
     }
 }

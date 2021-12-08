@@ -1,6 +1,5 @@
 #!/usr/bin/env bats
 
 @test "mpd test proper c bindings with linker" {
-  result="$(ldd /usr/bin/mpd)"
-  [ "$result" -eq 0 ]
+  ldd /usr/bin/mpd 1>/dev/null
 }
