@@ -14,12 +14,12 @@ node {
 
     stage('run tests') {
         DOCKER_IMAGE.inside("${DOCKER_ARGS} --entrypoint=") {
-            sh 'bats /usr/share/tests/*.bats'
+            sh 'bats /usr/build/test/*.bats'
         }
     }
 
     stage('push image') {
-        def shortHash = sh 'git rev-parse --short HEAD'
+        def shortHash = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
         DOCKER_IMAGE.push()
         DOCKER_IMAGE.push(shortHash)
     }

@@ -174,7 +174,7 @@ RUN apk -q update \
 VOLUME ["/var/lib/mpd", "/media/music"]
 
 COPY ./manifest/ /
-COPY ./tests/ /usr/share/tests
+COPY ./test/ /usr/build/test
 
 EXPOSE 6600
 EXPOSE 8800
