@@ -10,36 +10,26 @@ node {
     }
 
     stage('checkout') {
-        steps {
-            checkout scm
-        }
+        checkout scm
     }
  
     stage('image build') {
-        steps {
-            DOCKER_IMAGE = docker.build("${env.DOCKER_REGISTRY}/${env.DOCKER_REPO}:${env.BUILD_ID}", "${dockerArgs} .")
-        }
+        DOCKER_IMAGE = docker.build("${env.DOCKER_REGISTRY}/${env.DOCKER_REPO}:${env.BUILD_ID}", "${dockerArgs} .")
     }
 
     stage('run tests') {
-        steps {
-            DOCKER_IMAGE.inside("${env.DOCKER_ARGS} --entrypoint=") {
-                sh 'echo foobar'
-                sh 'ls -l'
-            }
+        DOCKER_IMAGE.inside("${env.DOCKER_ARGS} --entrypoint=") {
+            sh 'echo foobar'
+            sh 'ls -l'
         }
     }
 
     stage('push image') {
-        steps {
-            DOCKER_IMAGE.push()
-            DOCKER_IMAGE.push('latest')
-        }
+        DOCKER_IMAGE.push()
+        DOCKER_IMAGE.push('latest')
     }
 
     stage('schedule cleanup') {
-        steps {
-            build job: '../Cleanup/dangling-container-cleanup', wait: false
-        }
+        build job: '../Cleanup/dangling-container-cleanup', wait: false
     }
 }
