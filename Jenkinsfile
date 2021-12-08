@@ -14,7 +14,7 @@ node {
     }
  
     stage('image build') {
-        DOCKER_IMAGE = docker.build("${env.DOCKER_REGISTRY}/${env.DOCKER_REPO}:${env.BUILD_ID}", "${dockerArgs} .")
+        DOCKER_IMAGE = docker.build("${env.DOCKER_REGISTRY}/${env.DOCKER_REPO}:${env.BUILD_ID}", "${env.DOCKER_ARGS} .")
     }
 
     stage('run tests') {
