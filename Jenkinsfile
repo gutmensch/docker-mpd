@@ -14,11 +14,11 @@ node {
     }
  
     stage('image build') {
-        DOCKER_IMAGE = docker.build("${env.DOCKER_REGISTRY}/${env.DOCKER_REPO}:${env.BUILD_ID}", "${env.DOCKER_ARGS} .")
+        DOCKER_IMAGE = docker.build("${DOCKER_REGISTRY}/${DOCKER_REPO}:${BUILD_ID}", "${DOCKER_ARGS} .")
     }
 
     stage('run tests') {
-        DOCKER_IMAGE.inside("${env.DOCKER_ARGS} --entrypoint=") {
+        DOCKER_IMAGE.inside("${DOCKER_ARGS} --entrypoint=") {
             sh 'echo foobar'
             sh 'ls -l'
         }
