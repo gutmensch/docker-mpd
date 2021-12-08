@@ -1,30 +1,45 @@
-/*
-pipeline {
-    agent {
-        docker { image 'node:14-alpine' }
+DOCKER_IMAGE = ''
+
+node {
+    
+    environment { 
+        DOCKER_ARGS = '--no-cache --network=services_default'
+        DOCKER_REGISTRY = 'registry.n-os.org:5000'
+        DOCKER_REPO = env.JOB_BASE_NAME
+        DOCKER_COMMIT_TAG = env.GIT_COMMIT.take(7)
     }
-    stages {
-        stage('Test') {
-            steps {
-                sh 'node --version'
+
+    stage('checkout') {
+        steps {
+            checkout scm
+        }
+    }
+ 
+    stage('image build') {
+        steps {
+            DOCKER_IMAGE = docker.build("${env.DOCKER_REGISTRY}/${env.DOCKER_REPO}:${env.BUILD_ID}", "${dockerArgs} .")
+        }
+    }
+
+    stage('run tests') {
+        steps {
+            DOCKER_IMAGE.inside("${env.DOCKER_ARGS} --entrypoint=") {
+                sh 'echo foobar'
+                sh 'ls -l'
             }
         }
     }
-}
-*/
 
-node {
-    checkout scm
-
-    def dockerArgs = '--network=services_default'
-
-    def testImage = docker.build("registry.n-os.org:5000/mpd:${env.BUILD_ID}", "${dockerArgs} .")
-
-    testImage.inside("${dockerArgs} --entrypoint=") {
-        sh 'echo foobar'
-        sh 'ls -l'
+    stage('push image') {
+        steps {
+            DOCKER_IMAGE.push()
+            DOCKER_IMAGE.push('latest')
+        }
     }
-    
-    testImage.push()
-    testImage.push('latest')
+
+    stage('schedule cleanup') {
+        steps {
+            build job: '../Cleanup/dangling-container-cleanup', wait: false
+        }
+    }
 }

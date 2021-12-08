@@ -138,6 +138,7 @@ RUN adduser -D -g '' ympd
 # /dev/snd rights wrong, audio group missing
 RUN apk -q update \
     && apk -q --no-progress add \
+        bats \
 	libmpdclient \
 	flac \
 	yajl \
@@ -173,6 +174,7 @@ RUN apk -q update \
 VOLUME ["/var/lib/mpd", "/media/music"]
 
 COPY ./manifest/ /
+COPY ./tests/ /usr/share/tests
 
 EXPOSE 6600
 EXPOSE 8800
