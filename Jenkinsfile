@@ -7,7 +7,7 @@ SHORT_COMMIT = ''
 node {
     stage('checkout') {
         checkout scm
-        SHORT_COMMIT = "${GIT_COMMIT.take(7)}"
+        //SHORT_COMMIT = "${GIT_COMMIT.take(7)}"
     }
  
     stage('image build') {
@@ -23,7 +23,7 @@ node {
 
     stage('push image') {
         DOCKER_IMAGE.push()
-        DOCKER_IMAGE.push(SHORT_COMMIT)
+        //DOCKER_IMAGE.push(SHORT_COMMIT)
     }
 
     stage('schedule cleanup') {
