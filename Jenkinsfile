@@ -1,14 +1,10 @@
 DOCKER_IMAGE = ''
+DOCKER_ARGS = '--no-cache --network=services_default'
+DOCKER_REGISTRY = 'registry.n-os.org:5000'
+DOCKER_REPO = env.JOB_BASE_NAME
+DOCKER_COMMIT_TAG = env.GIT_COMMIT.take(7)
 
 node {
-    
-    environment { 
-        DOCKER_ARGS = '--no-cache --network=services_default'
-        DOCKER_REGISTRY = 'registry.n-os.org:5000'
-        DOCKER_REPO = env.JOB_BASE_NAME
-        DOCKER_COMMIT_TAG = env.GIT_COMMIT.take(7)
-    }
-
     stage('checkout') {
         checkout scm
     }
