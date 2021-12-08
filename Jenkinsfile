@@ -2,11 +2,12 @@ DOCKER_IMAGE = ''
 DOCKER_ARGS = '--no-cache --network=services_default'
 DOCKER_REGISTRY = 'registry.n-os.org:5000'
 DOCKER_REPO = "${JOB_BASE_NAME}"
-SHORT_COMMIT = "${GIT_COMMIT.take(7)}"
+SHORT_COMMIT = ''
 
 node {
     stage('checkout') {
         checkout scm
+        SHORT_COMMIT = "${GIT_COMMIT.take(7)}"
     }
  
     stage('image build') {
