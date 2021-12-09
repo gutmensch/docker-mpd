@@ -3,17 +3,17 @@
 load helper
 
 @test "mpd expected decoder plugins" {
-  run check_decoder "[mad]" "mp3 mp2"; [ "$status" -eq 0 ]
-  run check_decoder "[mpg123]" "mp3"; [ "$status" -eq 0 ]
-  run check_decoder "[flac]" "flac"; [ "$status" -eq 0 ]
-  run check_decoder "[opus]" "opus ogg oga"; [ "$status" -eq 0 ]
-  run check_decoder "[sndfile]" "wav aiff aif au snd paf iff svx sf voc w64 pvf xi htk caf sd2"; [ "$status" -eq 0 ]
-  run check_decoder "[audiofile]" "wav au aiff aif"; [ "$status" -eq 0 ]
-  run check_decoder "[faad]" "aac"; [ "$status" -eq 0 ]
-  run check_decoder "[mpcdec]" "mpc"; [ "$status" -eq 0 ]
-  run check_decoder "[wavpack]" "wv"; [ "$status" -eq 0 ]
-  run check_decoder "[wildmidi]" "mid"; [ "$status" -eq 0 ]
-  run check_decoder "[ffmpeg]" "aac ac3 .* apc ape asf atrac au aud avi .* divx dts dv dvd dxa eac3 film flac .* flv g726 gsm gxf iss m1v m2v m2t m2ts m4a m4b m4v mad mj2 mjpeg mjpg mka mkv mlp mm mmf mov mp+ mp1 mp2 mp3 mp4 mpc mpeg mpg mpga"; [ "$status" -eq 0 ]
+  run check_decoder "\[mad\]" "mp3 mp2"; [ "$status" -eq 0 ]
+  run check_decoder "\[mpg123\]" "mp3"; [ "$status" -eq 0 ]
+  run check_decoder "\[flac\]" "flac"; [ "$status" -eq 0 ]
+  run check_decoder "\[opus\]" "opus ogg oga"; [ "$status" -eq 0 ]
+  run check_decoder "\[sndfile\]" "wav aiff aif au snd paf iff svx sf voc w64 pvf xi htk caf sd2"; [ "$status" -eq 0 ]
+  run check_decoder "\[audiofile\]" "wav au aiff aif"; [ "$status" -eq 0 ]
+  run check_decoder "\[faad\]" "aac"; [ "$status" -eq 0 ]
+  run check_decoder "\[mpcdec\]" "mpc"; [ "$status" -eq 0 ]
+  run check_decoder "\[wavpack\]" "wv"; [ "$status" -eq 0 ]
+  run check_decoder "\[wildmidi\]" "mid"; [ "$status" -eq 0 ]
+  run check_decoder "\[ffmpeg\]" "aac ac3 .* apc ape asf atrac au aud avi .* divx dts dv dvd dxa eac3 film flac .* flv g726 gsm gxf iss m1v m2v m2t m2ts m4a m4b m4v mad mj2 mjpeg mjpg mka mkv mlp mm mmf mov mp+ mp1 mp2 mp3 mp4 mpc mpeg mpg mpga"; [ "$status" -eq 0 ]
 }
 
 @test "mpd expected encoder plugins" {
