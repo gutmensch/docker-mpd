@@ -20,18 +20,7 @@ properties([
 
 node {
     try {
-        pipeline(
-            "${ALPINE_VERSION}",
-            "${MPD_VERSION}",
-            "${S6_OVERLAY_VERSION}",
-            "${MPC_VERSION}",
-            "${AUDIOFILE_VERSION}",
-            "${TWOLAME_VERSION}",
-            "${OPUSENC_VERSION}",
-            "${OPUS_VERSION}",
-            "${CHROMAPRINT_VERSION}",
-            "${WILDMIDI_VERSION}"
-        )
+        pipeline()
     }
     catch(e) {
         throw e
@@ -41,24 +30,24 @@ node {
     }
 }
 
-def pipeline(alpine, mpd, s6overlay, mpc, audiofile, twolame, opusenc, opus, chromaprint, wildmidi) {
+def pipeline() {
     stage('checkout') {
         checkout scm
     }
 
     stage('image build') {
         DOCKER_IMAGE = docker.build(
-            "${DOCKER_REGISTRY}/${DOCKER_REPO}:${mpd}",
-            "--build-arg ALPINE_VERSION=${alpine} " +
-            "--build-arg MPD_VERSION=${mpd} " +
-            "--build-arg S6_OVERLAY_VERSION=${s6overlay} " +
-            "--build-arg MPC_VERSION=${mpc} " +
-            "--build-arg AUDIOFILE_VERSION=${audiofile} " +
-            "--build-arg TWOLAME_VERSION=${twolame} " +
-            "--build-arg OPUSENC_VERSION=${opusenc} " +
-            "--build-arg OPUS_VERSION=${opus} " +
-            "--build-arg CHROMAPRINT_VERSION=${chromaprint} " +
-            "--build-arg WILDMIDI_VERSION=${wildmidi} " +
+            "${DOCKER_REGISTRY}/${DOCKER_REPO}:${MPD_VERSION}",
+            "--build-arg ALPINE_VERSION=${ALPINE_VERSION} " +
+            "--build-arg MPD_VERSION=${MPD_VERSION} " +
+            "--build-arg S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION} " +
+            "--build-arg MPC_VERSION=${MPC_VERSION} " +
+            "--build-arg AUDIOFILE_VERSION=${AUDIOFILE_VERSION} " +
+            "--build-arg TWOLAME_VERSION=${TWOLAME_VERSION} " +
+            "--build-arg OPUSENC_VERSION=${OPUSENC_VERSION} " +
+            "--build-arg OPUS_VERSION=${OPUS_VERSION} " +
+            "--build-arg CHROMAPRINT_VERSION=${CHROMAPRINT_VERSION} " +
+            "--build-arg WILDMIDI_VERSION=${WILDMIDI_VERSION} " +
             "--no-cache ${DOCKER_ARGS} ."
         )
     }
