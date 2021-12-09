@@ -13,7 +13,7 @@ load helper
   run check_decoder "[mpcdec]" "mpc"; [ "$status" -eq 0 ]
   run check_decoder "[wavpack]" "wv"; [ "$status" -eq 0 ]
   run check_decoder "[wildmidi]" "mid"; [ "$status" -eq 0 ]
-  run check_decoder "[ffmpeg]" "aac ac3 adx afc aif aifc aiff al alaw amr anim apc ape asf atrac au aud avi avm2 avs bap bfi c93 cak cin cmv cpk daud dct divx dts dv dvd dxa eac3 film flac flc fli fll flx flv g726 gsm gxf iss m1v m2v m2t m2ts m4a m4b m4v mad mj2 mjpeg mjpg mka mkv mlp mm mmf mov mp+ mp1 mp2 mp3 mp4 mpc mpeg mpg mpga"; [ "$status" -eq 0 ]
+  run check_decoder "[ffmpeg]" "aac ac3 .* apc ape asf atrac au aud avi .* divx dts dv dvd dxa eac3 film flac .* flv g726 gsm gxf iss m1v m2v m2t m2ts m4a m4b m4v mad mj2 mjpeg mjpg mka mkv mlp mm mmf mov mp+ mp1 mp2 mp3 mp4 mpc mpeg mpg mpga"; [ "$status" -eq 0 ]
 }
 
 @test "mpd expected encoder plugins" {
