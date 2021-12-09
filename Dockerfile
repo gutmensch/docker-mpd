@@ -1,12 +1,14 @@
-FROM alpine:3.11 AS builder
+ARG ALPINE_VERSION
+FROM alpine:$ALPINE_VERSION AS builder
 
-ARG WILDMIDI_VERSION=0.4.3
-ARG CHROMAPRINT_VERSION=1.4.3
-ARG OPUS_VERSION=1.3.1
-ARG OPUSENC_VERSION=0.2.1
-ARG TWOLAME_VERSION=0.4.0
-ARG AUDIOFILE_VERSION=0.3.6
-ARG MPD_VERSION=0.20.23
+ARG WILDMIDI_VERSION
+ARG CHROMAPRINT_VERSION
+ARG OPUS_VERSION
+ARG OPUSENC_VERSION
+ARG TWOLAME_VERSION
+ARG AUDIOFILE_VERSION
+ARG MPC_VERSION
+ARG MPD_VERSION
 
 RUN apk update \
   && apk add \
@@ -52,8 +54,8 @@ RUN cd / \
   && unzip master.zip \
   && rm -f master.zip \
   && cd musepack-master \
-  && wget http://deb.debian.org/debian/pool/main/libm/libmpc/libmpc_0.1~r495-1.debian.tar.xz \
-  && tar xvf libmpc_0.1~r495-1.debian.tar.xz \
+  && wget "http://deb.debian.org/debian/pool/main/libm/libmpc/libmpc_${MPC_VERSION}.debian.tar.xz" \
+  && tar xvf "libmpc_${MPC_VERSION}.debian.tar.xz" \
   && for i in $(cat debian/patches/series); do echo $i; patch -p1 < debian/patches/$i; done \
   && libtoolize --force \
   && aclocal \
@@ -118,7 +120,11 @@ RUN tar xzf /v${MPD_VERSION}.tar.gz -C / \
   && bash -c '[ -f meson.build ] && meson --prefix=/usr --sysconfdir=/etc --localstatedir=/var build && cd build && ninja && ninja install || true' \
   && mkdir -p /build/var/lib/mpd/playlists
 
-FROM alpine:3.11 AS runner
+ARG ALPINE_VERSION
+FROM alpine:$ALPINE_VERSION AS runner
+
+ARG S6_OVERLAY_VERSION
+
 # copied in most parts from https://github.com/VITIMan/docker-music-stack/blob/master/mpd
 # start on qnap with
 # docker run -d  --cpus ".2" --memory 256mb --cap-add SYS_NICE --net host -v var-lib-mpd:/var/lib/mpd -v /share/Music:/media/music:ro --device=/dev/snd:/dev/snd --name mpd-1 --restart always gutmensch/mpd:latest
@@ -127,7 +133,7 @@ FROM alpine:3.11 AS runner
 LABEL maintainer="@gutmensch https://github.com/gutmensch"
 
 # install s6 for mpd and ympd
-ADD https://github.com/just-containers/s6-overlay/releases/download/v1.22.1.0/s6-overlay-amd64.tar.gz /tmp/
+ADD "https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz" /tmp/
 RUN tar xzf /tmp/s6-overlay-amd64.tar.gz -C / \
   && rm /tmp/s6-overlay-amd64.tar.gz
 
