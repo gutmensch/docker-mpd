@@ -1,4 +1,4 @@
-# docker-mpd [![Docker Pulls](https://img.shields.io/docker/pulls/gutmensch/mpd.svg)](https://registry.hub.docker.com/u/gutmensch/mpd/)
+# docker-mpd [![Build Status](https://jenkins.bln.space/buildStatus/icon?job=Docker+Images%2Fdocker-mpd)](https://jenkins.bln.space/job/Docker%20Images/job/docker-mpd/) [![Docker Pulls](https://img.shields.io/docker/pulls/gutmensch/mpd.svg)](https://registry.hub.docker.com/u/gutmensch/mpd/)
 
 mpd - music player daemon
 
