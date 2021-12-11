@@ -71,7 +71,7 @@ void cleanup() {
     }
 }
 
-static String getDockerTag() {
+String getDockerTag() {
     def shortHash = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
     def date = new Date()
     def sdf = new SimpleDateFormat("yyyyMMddHHmmss")
