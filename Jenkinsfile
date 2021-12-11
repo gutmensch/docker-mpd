@@ -49,8 +49,7 @@ def pipeline() {
     }
 
     stage('run tests') {
-        testScript = new File('./test/run_tests.sh')
-        if (testScript.exists() && !params.SKIP_TESTS) {
+        if (fileExists('./test/run_tests.sh') && !params.SKIP_TESTS) {
             DOCKER_IMAGE.inside("${DOCKER_ARGS} --entrypoint=") {
                 sh '/usr/build/test/run_tests.sh'
             }
@@ -76,8 +75,7 @@ String getDockerTag() {
     def date = new Date()
     def sdf = new SimpleDateFormat("yyyyMMddHHmmss")
     // semver in TAG_ID file or reference to ARG in Dockerfile
-    def tagFile = new File('./TAG_ID')
-    if (!tagFile.exists()) {
+    if (!fileExists('./TAG_ID')) {
         return "${sdf.format(date)}.${shortHash}.b${BUILD_ID}"
     }
     def tagId = sh(script: 'cat ./TAG_ID', returnStdout: true).trim()
