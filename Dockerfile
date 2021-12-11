@@ -1,14 +1,14 @@
-ARG ALPINE_VERSION
+ARG ALPINE_VERSION=3.15
 FROM alpine:$ALPINE_VERSION AS builder
 
-ARG WILDMIDI_VERSION
-ARG CHROMAPRINT_VERSION
-ARG OPUS_VERSION
-ARG OPUSENC_VERSION
-ARG TWOLAME_VERSION
-ARG AUDIOFILE_VERSION
-ARG MPC_VERSION
-ARG MPD_VERSION
+ARG MPD_VERSION=0.22.11
+ARG WILDMIDI_VERSION=0.4.4
+ARG CHROMAPRINT_VERSION=1.5.0
+ARG OPUS_VERSION=1.3.1
+ARG OPUSENC_VERSION=0.2.1
+ARG TWOLAME_VERSION=0.4.0
+ARG AUDIOFILE_VERSION=0.3.6
+ARG MPC_VERSION=0.1~r495-1
 
 RUN apk update \
   && apk add \
@@ -47,6 +47,7 @@ RUN apk update \
 	libmms-dev \
 	icu-dev \
 	libnfs-dev \
+	xz \
 	wget
 
 ADD https://github.com/tatsuz/musepack/archive/master.zip /
@@ -123,7 +124,7 @@ RUN tar xzf /v${MPD_VERSION}.tar.gz -C / \
 ARG ALPINE_VERSION
 FROM alpine:$ALPINE_VERSION AS runner
 
-ARG S6_OVERLAY_VERSION
+ARG S6_OVERLAY_VERSION=v2.2.0.3
 
 # copied in most parts from https://github.com/VITIMan/docker-music-stack/blob/master/mpd
 # start on qnap with
