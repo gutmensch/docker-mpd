@@ -71,7 +71,7 @@ def pipeline() {
 // --- standard helper functions ---
 def cleanup() {
     stage('schedule cleanup') {
-        build job: '../Maintenance/dangling-container-cleanup', wait: false
+        build job: '../maintenance/starter', wait: false
     }
 }
 
