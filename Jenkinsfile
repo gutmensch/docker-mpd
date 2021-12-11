@@ -1,9 +1,10 @@
+import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 import java.text.SimpleDateFormat
 
-DOCKER_IMAGE    = ''
-DOCKER_ARGS     = '--network=services_default'
-DOCKER_REGISTRY = 'registry.n-os.org:5000'
-DOCKER_REPO     = "${JOB_BASE_NAME}"
+DOCKER_IMAGE_NAME = ''
+DOCKER_IMAGE      = ''
+DOCKER_ARGS       = '--network=services_default'
+DOCKER_REGISTRY   = 'registry.n-os.org:5000'
 
 properties([
     parameters([
@@ -25,13 +26,13 @@ node {
 }
 
 
-/*
+/* 
+  ******************************************************************
+
   standard functions
   these functions below implement the standard docker image pipeline
-  pipeline:
-    tasks related to build
-  cleanup:
-    start docker cleanup job
+
+  ******************************************************************
 */
 def pipeline() {
 
@@ -40,19 +41,20 @@ def pipeline() {
         setBuildStatus('In progress...', 'PENDING')
     }
 
+    // https://docs.cloudbees.com/docs/admin-resources/latest/plugins/docker-workflow
     stage('build image') {
-        def tag = getDockerTag()
-        DOCKER_IMAGE = docker.build(
-            "${DOCKER_REGISTRY}/${DOCKER_REPO}:${tag}",
-            "--no-cache ${DOCKER_ARGS} ."
-        )
+        DOCKER_IMAGE_NAME = "${DOCKER_REGISTRY}/${getDockerImage()}:${getDockerTag()}"
+        DOCKER_IMAGE = docker.build(DOCKER_IMAGE_NAME, "--no-cache ${DOCKER_ARGS} .")
     }
 
     stage('run tests') {
-        if (fileExists('./test/run_tests.sh') && !params.SKIP_TESTS) {
+        if (fileExists('./test/run.sh') && !params.SKIP_TESTS) {
             DOCKER_IMAGE.inside("${DOCKER_ARGS} --entrypoint=") {
-                sh '/usr/build/test/run_tests.sh'
+                sh 'bash /usr/build/test/run.sh'
             }
+        }
+        else {
+            Utils.markStageSkippedForConditional('run tests')
         }
     }
 
@@ -60,14 +62,34 @@ def pipeline() {
         if (BRANCH_NAME == 'master') {
             DOCKER_IMAGE.push()
         }
+        else {
+            Utils.markStageSkippedForConditional('push image')
+        }
+    }
+
+    stage('delete image') {
+        if (BRANCH_NAME == 'master') {
+            Utils.markStageSkippedForConditional('delete image')
+        }
+        else {
+            deleteDockerImage(DOCKER_IMAGE_NAME)
+        }
         setBuildStatus('Success', 'SUCCESS')
     }
 }
 
+void deleteDockerImage(image) {
+    sh(script: "docker rmi -f ${image}")
+}
+
 void cleanup() {
     stage('schedule cleanup') {
-        build job: '../maintenance/starter', wait: false
+        build job: '/maintenance/starter', wait: false
     }
+}
+
+String getDockerImage() {
+    return sh(script: "echo '${JOB_NAME}' | awk -F/ '{print \$(NF-1)}'", returnStdout: true).trim()
 }
 
 String getDockerTag() {

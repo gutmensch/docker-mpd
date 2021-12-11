@@ -22,6 +22,7 @@ RUN apk update \
 	libvorbis-dev \
 	libsamplerate-dev \
 	libid3tag-dev \
+	libupnp-dev \
 	mpg123-dev \
 	flac-dev \
 	ffmpeg-dev \
@@ -47,6 +48,7 @@ RUN apk update \
 	libmms-dev \
 	icu-dev \
 	libnfs-dev \
+	expat-dev \
 	xz \
 	wget
 
@@ -152,6 +154,7 @@ RUN apk -q update \
 	yajl \
 	libsndfile \
 	libsamplerate \
+	libupnp \
 	libvorbis \
 	faad2-libs \
 	sndio-libs \
@@ -176,6 +179,7 @@ RUN apk -q update \
 	ympd \
 	mpc \
 	alsa-utils \
+	expat \
     && rm -rf /var/cache/apk/* \
     && mkdir -p /var/lib/mpd/playlists
 
