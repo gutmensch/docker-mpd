@@ -49,8 +49,8 @@ def pipeline() {
     }
 
     stage('run tests') {
-        Path testDir = './test/run_tests.sh'
-        if (Files.exists(testDir) && !params.SKIP_TESTS) {
+        testScript = new File('./test/run_tests.sh')
+        if (testScript.exists() && !params.SKIP_TESTS) {
             DOCKER_IMAGE.inside("${DOCKER_ARGS} --entrypoint=") {
                 sh '/usr/build/test/run_tests.sh'
             }
