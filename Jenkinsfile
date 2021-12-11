@@ -5,16 +5,16 @@ DOCKER_REPO = "${JOB_BASE_NAME}"
 
 properties([
     parameters([
-        string(defaultValue: '3.11', name: 'ALPINE_VERSION', description: "Alpine version upstream docker image"),
-        string(defaultValue: '0.20.23', name: 'MPD_VERSION', description: "MPD version to build"),
-        string(defaultValue: 'v1.22.1.0', name: 'S6_OVERLAY_VERSION', description: "S6 overlay version in runner image"),
+        string(defaultValue: '3.15', name: 'ALPINE_VERSION', description: "Alpine version upstream docker image"),
+        string(defaultValue: '0.22.11', name: 'MPD_VERSION', description: "MPD version to build"),
+        string(defaultValue: 'v2.2.0.3', name: 'S6_OVERLAY_VERSION', description: "S6 overlay version in runner image"),
         string(defaultValue: '0.1~r495-1', name: 'MPC_VERSION', description: "Musepack library version to build"),
         string(defaultValue: '0.3.6', name: 'AUDIOFILE_VERSION', description: "Audiofile library version to build"),
         string(defaultValue: '0.4.0', name: 'TWOLAME_VERSION', description: "Twolame library version to build"),
         string(defaultValue: '0.2.1', name: 'OPUSENC_VERSION', description: "Opusenc library version to build"),
         string(defaultValue: '1.3.1', name: 'OPUS_VERSION', description: "Opus library version to build"),
-        string(defaultValue: '1.4.3', name: 'CHROMAPRINT_VERSION', description: "Chromaprint library version to build"),
-        string(defaultValue: '0.4.3', name: 'WILDMIDI_VERSION', description: "Wildmidi library version to build")
+        string(defaultValue: '1.5.0', name: 'CHROMAPRINT_VERSION', description: "Chromaprint library version to build"),
+        string(defaultValue: '0.4.4', name: 'WILDMIDI_VERSION', description: "Wildmidi library version to build")
     ])
 ])
 
