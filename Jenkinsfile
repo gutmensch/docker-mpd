@@ -10,7 +10,8 @@ DOCKER_REGISTRY   = 'registry.n-os.org:5000'
 
 properties([
     parameters([
-        booleanParam(name: 'SKIP_TESTS', defaultValue: false, description: 'Do you want to run the build with tests?')
+        booleanParam(name: 'SKIP_TESTS', defaultValue: false, description: 'Do you want to run the build with tests?'),
+        booleanParam(name: 'KEEP_BUILD_IMAGE', defaultValue: false, description: 'Do you want to keep the docker image built on PR or branch?')
     ])
 ])
 
@@ -71,7 +72,7 @@ def pipeline() {
     }
 
     stage('delete image') {
-        if (BRANCH_NAME == 'master') {
+        if (BRANCH_NAME == 'master' || KEEP_BUILD_IMAGE) {
             Utils.markStageSkippedForConditional('delete image')
         }
         else {
