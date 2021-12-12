@@ -1,7 +1,7 @@
 ARG ALPINE_VERSION=3.15
 FROM alpine:$ALPINE_VERSION AS builder
 
-ARG MPD_VERSION=0.22.11
+ARG MPD_VERSION=0.23.5
 ARG WILDMIDI_VERSION=0.4.4
 ARG CHROMAPRINT_VERSION=1.5.0
 ARG OPUS_VERSION=1.3.1
@@ -49,6 +49,9 @@ RUN apk update \
 	icu-dev \
 	libnfs-dev \
 	expat-dev \
+        jack-dev \
+        pulseaudio-dev \
+        libao-dev \
 	xz \
 	wget
 
@@ -180,6 +183,9 @@ RUN apk -q update \
 	mpc \
 	alsa-utils \
 	expat \
+	libpulse \
+	jack \
+	libao \
     && rm -rf /var/cache/apk/* \
     && mkdir -p /var/lib/mpd/playlists
 
