@@ -77,8 +77,7 @@ load helper
 
 @test "mpd expected protocols" {
   values="$(mpd -V | grep -A1 'Protocols:' | tail -n 1)"
-  expected="file:// alsa:// ftp:// ftps:// gopher:// hls+http:// hls+https:// http:// https:// mms:// mmsh:// mmst:// mmsu:// nfs:// qobuz:// rtmp:// rtmps:// rtmpt:// rtmpts:// rtp:// rtsp:// rtsps:// sftp:// smb:// srtp://"
-
+  expected="file:// alsa:// ftp:// ftps:// gopher:// http:// https:// mms:// mmsh:// mmst:// mmsu:// nfs:// qobuz:// rtmp:// rtmps:// rtmpt:// rtmpts:// rtp:// rtsp:// rtsps:// sftp:// smb:// srtp://"
   for e in $expected; do
     echo test for $e
     [[ $values =~ $e ]]
