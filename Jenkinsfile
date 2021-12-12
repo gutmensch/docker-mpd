@@ -1,16 +1,19 @@
 import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 import java.text.SimpleDateFormat
 
+
 DOCKER_IMAGE_NAME = ''
 DOCKER_IMAGE      = ''
 DOCKER_ARGS       = '--network=services_default'
 DOCKER_REGISTRY   = 'registry.n-os.org:5000'
+
 
 properties([
     parameters([
         booleanParam(name: 'SKIP_TESTS', defaultValue: false, description: 'Do you want to run the build with tests?')
     ])
 ])
+
 
 node {
     try {
@@ -26,7 +29,7 @@ node {
 }
 
 
-/* 
+/*
   ******************************************************************
 
   standard functions
@@ -89,7 +92,7 @@ void cleanup() {
 }
 
 String getDockerImage() {
-    return sh(script: "echo '${JOB_NAME}' | awk -F/ '{print \$(NF-1)}'", returnStdout: true).trim()
+    return sh(script: "echo '${JOB_NAME}' | awk -F/ '{print \$(NF-1)}' | sed 's%docker-%%'", returnStdout: true).trim()
 }
 
 String getDockerTag() {
