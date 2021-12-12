@@ -52,6 +52,7 @@ RUN apk update \
         jack-dev \
         pulseaudio-dev \
         libao-dev \
+        pipewire-dev \
 	xz \
 	wget
 
@@ -186,6 +187,7 @@ RUN apk -q update \
 	libpulse \
 	jack \
 	libao \
+	pipewire \
     && rm -rf /var/cache/apk/* \
     && mkdir -p /var/lib/mpd/playlists
 
