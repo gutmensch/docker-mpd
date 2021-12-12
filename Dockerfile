@@ -188,8 +188,12 @@ RUN apk -q update \
 	jack \
 	libao \
 	pipewire \
+	ncurses \
     && rm -rf /var/cache/apk/* \
-    && mkdir -p /var/lib/mpd/playlists
+    && mkdir -p /var/lib/mpd/playlists \
+    && wget -O - https://gitlab.com/sonida/mpd-configure/-/archive/master/mpd-configure-master.tar.gz | tar xzv -C /usr/bin/ \
+    && mkdir -p /usr/bin/helpers \
+    && wget -O /usr/bin/helpers/alsa-capabilities  https://gitlab.com/sonida/alsa-capabilities/-/raw/72d0521459460e8a1af824c47e9a5fcc02110405/alsa-capabilities
 
 VOLUME ["/var/lib/mpd", "/media/music"]
 
