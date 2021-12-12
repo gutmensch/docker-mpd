@@ -38,7 +38,17 @@ load helper
 
 @test "mpd expected input plugins" {
   values="$(mpd -V | grep -A1 'Input plugins:' | tail -n 1)"
-  expected="file alsa archive curl ffmpeg nfs mms"
+  expected="file archive alsa qobuz curl ffmpeg nfs mms"
+
+  for e in $expected; do
+    echo test for $e
+    [[ $values =~ $e ]]
+  done
+}
+
+@test "mpd expected neighbor plugins" {
+  values="$(mpd -V | grep -A1 'Neighbor plugins:' | tail -n 1)"
+  expected="upnp"
 
   for e in $expected; do
     echo test for $e
@@ -48,8 +58,7 @@ load helper
 
 @test "mpd expected output plugins" {
   values="$(mpd -V | grep -A1 'Output plugins:' | tail -n 1)"
-  expected="shout null fifo sndio alsa oss httpd recorder"
-
+  expected="shout null fifo sndio pipe alsa httpd recorder"
   for e in $expected; do
     echo test for $e
     [[ $values =~ $e ]]
@@ -58,7 +67,7 @@ load helper
 
 @test "mpd expected playlist plugins" {
   values="$(mpd -V | grep -A1 'Playlist plugins:' | tail -n 1)"
-  expected="extm3u m3u pls soundcloud flac cue embcue"
+  expected="extm3u m3u pls xspf asx rss soundcloud flac cue embcue"
 
   for e in $expected; do
     echo test for $e
@@ -68,7 +77,7 @@ load helper
 
 @test "mpd expected protocols" {
   values="$(mpd -V | grep -A1 'Protocols:' | tail -n 1)"
-  expected="file:// http:// https:// mms:// mmsh:// mmst:// mmsu:// gopher:// rtp:// rtsp:// rtmp:// rtmpt:// rtmps:// nfs:// alsa://"
+  expected="file:// alsa:// ftp:// ftps:// gopher:// hls+http:// hls+https:// http:// https:// mms:// mmsh:// mmst:// mmsu:// nfs:// qobuz:// rtmp:// rtmps:// rtmpt:// rtmpts:// rtp:// rtsp:// rtsps:// sftp:// smb:// srtp://"
 
   for e in $expected; do
     echo test for $e

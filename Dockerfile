@@ -188,9 +188,7 @@ VOLUME ["/var/lib/mpd", "/media/music"]
 COPY ./manifest/ /
 COPY ./test/ /usr/build/test
 
-EXPOSE 6600
-EXPOSE 8800
-EXPOSE 8000
-EXPOSE 8866
+# 6600 mpd port, 8800 mpd http output, ympd ui 8866
+EXPOSE 6600 8800 8866
 
 ENTRYPOINT ["/init"]
