@@ -133,7 +133,7 @@ FROM alpine:$ALPINE_VERSION AS runner
 ARG S6_OVERLAY_VERSION=v2.2.0.3
 
 # start on qnap with
-# docker run -d  --cpus ".5" --memory 256mb --cap-add SYS_NICE --net host -v var-lib-mpd:/var/lib/mpd -v /share/Music:/media/music:ro --device=/dev/snd:/dev/snd --name mpd-1 --restart always gutmensch/mpd:latest
+# docker run -d  --cpus "1" --memory 256mb --cap-add SYS_NICE --net host -v var-lib-mpd:/var/lib/mpd -v /share/Music:/media/music:ro --device=/dev/snd:/dev/snd -e MPD_ALSA_NAME="USB Audio" -e MPD_ALSA_DEVICE="iec958:CARD=U0xccd0x77,DEV=0" --name mpd-1 --restart always gutmensch/mpd:latest
 # and enable rt scheduling first on qnap with sysctl -w kernel.sched_rt_runtime_us=-1
 
 LABEL maintainer="@gutmensch https://github.com/gutmensch"
