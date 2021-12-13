@@ -132,7 +132,6 @@ FROM alpine:$ALPINE_VERSION AS runner
 
 ARG S6_OVERLAY_VERSION=v2.2.0.3
 
-# copied in most parts from https://github.com/VITIMan/docker-music-stack/blob/master/mpd
 # start on qnap with
 # docker run -d  --cpus ".5" --memory 256mb --cap-add SYS_NICE --net host -v var-lib-mpd:/var/lib/mpd -v /share/Music:/media/music:ro --device=/dev/snd:/dev/snd --name mpd-1 --restart always gutmensch/mpd:latest
 # and enable rt scheduling first on qnap with sysctl -w kernel.sched_rt_runtime_us=-1
