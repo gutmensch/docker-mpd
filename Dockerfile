@@ -191,7 +191,7 @@ RUN apk -q update \
 	ncurses \
     && rm -rf /var/cache/apk/* \
     && mkdir -p /var/lib/mpd/playlists \
-    && wget -O - https://gitlab.com/sonida/mpd-configure/-/archive/master/mpd-configure-master.tar.gz | tar xzv -C /usr/bin/ \
+    && wget -O - https://gitlab.com/sonida/mpd-configure/-/archive/master/mpd-configure-master.tar.gz | tar xzv --strip-components=1 -C /usr/bin/ \
     && mkdir -p /usr/bin/helpers \
     && wget -O /usr/bin/helpers/alsa-capabilities  https://gitlab.com/sonida/alsa-capabilities/-/raw/72d0521459460e8a1af824c47e9a5fcc02110405/alsa-capabilities
 
