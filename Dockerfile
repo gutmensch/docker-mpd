@@ -78,7 +78,7 @@ RUN tar xzf /wildmidi-${WILDMIDI_VERSION}.tar.gz -C / \
   && mkdir -p /build/etc/wildmidi \
   && mkdir -p /build/usr/share/midi \
   && cp cfg/wildmidi.cfg /build/etc/wildmidi/ \
-  && wget https://freepats.zenvoid.org/freepats-20060219.tar.xz -O - | tar xv -C /build/usr/share/midi/ \
+  && wget https://freepats.zenvoid.org/freepats-20060219.tar.xz -O - | tar xvJ -C /build/usr/share/midi/ \
   && cp -av /build/* /
 
 ADD https://github.com/acoustid/chromaprint/releases/download/v${CHROMAPRINT_VERSION}/chromaprint-${CHROMAPRINT_VERSION}.tar.gz /
