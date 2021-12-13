@@ -49,10 +49,6 @@ RUN apk update \
 	icu-dev \
 	libnfs-dev \
 	expat-dev \
-        jack-dev \
-        pulseaudio-dev \
-        libao-dev \
-        pipewire-dev \
 	xz \
 	wget
 
@@ -79,6 +75,10 @@ RUN tar xzf /wildmidi-${WILDMIDI_VERSION}.tar.gz -C / \
   && libtoolize --force \
   && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=ON . \
   && make DESTDIR=/build install \
+  && mkdir /build/etc/wildmidi \
+  && mkdir /build/usr/share/midi/freepats \
+  && cp cfg/wildmidi.cfg /build/etc/wildmidi/ \
+  && wget https://freepats.zenvoid.org/freepats-20060219.tar.xz -O - | tar xv -C /build/usr/share/midi/freepats/ \
   && cp -av /build/* /
 
 ADD https://github.com/acoustid/chromaprint/releases/download/v${CHROMAPRINT_VERSION}/chromaprint-${CHROMAPRINT_VERSION}.tar.gz /
@@ -134,7 +134,7 @@ ARG S6_OVERLAY_VERSION=v2.2.0.3
 
 # copied in most parts from https://github.com/VITIMan/docker-music-stack/blob/master/mpd
 # start on qnap with
-# docker run -d  --cpus ".2" --memory 256mb --cap-add SYS_NICE --net host -v var-lib-mpd:/var/lib/mpd -v /share/Music:/media/music:ro --device=/dev/snd:/dev/snd --name mpd-1 --restart always gutmensch/mpd:latest
+# docker run -d  --cpus ".5" --memory 256mb --cap-add SYS_NICE --net host -v var-lib-mpd:/var/lib/mpd -v /share/Music:/media/music:ro --device=/dev/snd:/dev/snd --name mpd-1 --restart always gutmensch/mpd:latest
 # and enable rt scheduling first on qnap with sysctl -w kernel.sched_rt_runtime_us=-1
 
 LABEL maintainer="@gutmensch https://github.com/gutmensch"
@@ -184,10 +184,6 @@ RUN apk -q update \
 	mpc \
 	alsa-utils \
 	expat \
-	libpulse \
-	jack \
-	libao \
-	pipewire \
 	ncurses \
     && rm -rf /var/cache/apk/* \
     && mkdir -p /var/lib/mpd/playlists \

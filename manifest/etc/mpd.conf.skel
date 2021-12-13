@@ -1,0 +1,47 @@
+music_directory		"__MUSIC_DIRECTORY__"
+playlist_directory	"/var/lib/mpd/playlists"
+db_file			"/var/lib/mpd/database"
+log_file		"/var/lib/mpd/mpd.log"
+state_file		"/var/lib/mpd/mpd.state"
+sticker_file		"/var/lib/mpd/sticker.sql"
+log_level               "__LOG_LEVEL__"
+port                    "__PORT__"
+samplerate_converter    "Best Sinc Interpolator"
+filesystem_charset      "UTF-8"
+replaygain              "off"
+
+decoder {
+        plugin          "ffmpeg"
+        probesize       "2000000"
+}
+
+input {
+        plugin "curl"
+}
+
+audio_output {
+        type                "alsa"
+        name                "__ALSA_NAME__"
+        device              "__ALSA_DEVICE__"
+        mixer_type          "none"
+        auto_resample       "no"
+        auto_channels       "no"
+        auto_format         "no"
+        replay_gain_handler "none"
+        buffer_time         "250000"
+        period_time         "5084"
+}
+
+audio_output {
+        type                "httpd"
+        name                "MPD HTTP Stream"
+        encoder             "lame"
+        port                "__HTTPD_OUTPUT_PORT__"
+        # HiFi, home, or quiet listening, with best file size
+        # -V 0 (~245 kbps), -V 1 (~225 kbps), -V 2 (~190 kbps) or -V 3 (~175 kbps) are recommended.
+        # Portable: listening in noisy conditions, lower bitrate, smaller file size
+        # -V 4 (~165 kbps), -V 5 (~130 kbps) or -V 6 (~115 kbps) are recommended.
+        quality             "__HTTPD_OUTPUT_QUALITY__"
+        always_on           "yes"
+        tags                "yes"
+}

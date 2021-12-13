@@ -1,0 +1,22 @@
+#!/usr/bin/execlineb -P
+
+with-contenv
+
+# setting defaults
+MPD_LOG_LEVEL="${MPD_LOG_LEVEL:-default}"
+MPD_PORT="${MPD_PORT:-6600}"
+MPD_MUSIC_DIRECTORY="${MPD_MUSIC_DIRECTORY:-/media/music}"
+MPD_ALSA_NAME="${MPD_ALSA_NAME:-AudioDevice}"
+MPD_ALSA_DEVICE="${MPD_ALSA_DEVICE:-hw:0,0}"
+MPD_HTTPD_OUTPUT_PORT="${MPD_HTTPD_OUTPUT_PORT:-8800}"
+MPD_HTTPD_OUTPUT_QUALITY="${MPD_HTTPD_OUTPUT_QUALITY:-3.0}"
+
+# writing config
+sed -ir "s%__LOG_LEVEL__%${MPD_LOG_LEVEL}%" /etc/mpd.conf.skel
+sed -ir "s%__PORT__%${MPD_PORT}%" /etc/mpd.conf.skel
+sed -ir "s%__MUSIC_DIRECTORY__%${MPD_MUSIC_DIRECTORY}%" /etc/mpd.conf.skel
+sed -ir "s%__ALSA_NAME__%${MPD_ALSA_NAME}%" /etc/mpd.conf.skel
+sed -ir "s%__ALSA_DEVICE__%${MPD_ALSA_DEVICE}%" /etc/mpd.conf.skel
+sed -ir "s%__HTTPD_OUTPUT_PORT__%${MPD_HTTPD_OUTPUT_PORT}%" /etc/mpd.conf.skel
+sed -ir "s%__HTTPD_OUTPUT_QUALITY__%${MPD_HTTPD_OUTPUT_QUALITY}%" /etc/mpd.conf.skel
+cp /etc/mpd.conf.skel /etc/mpd.conf
