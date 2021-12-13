@@ -1,14 +1,14 @@
-ARG ALPINE_VERSION
+ARG ALPINE_VERSION=3.15
 FROM alpine:$ALPINE_VERSION AS builder
 
-ARG WILDMIDI_VERSION
-ARG CHROMAPRINT_VERSION
-ARG OPUS_VERSION
-ARG OPUSENC_VERSION
-ARG TWOLAME_VERSION
-ARG AUDIOFILE_VERSION
-ARG MPC_VERSION
-ARG MPD_VERSION
+ARG MPD_VERSION=0.23.5
+ARG WILDMIDI_VERSION=0.4.4
+ARG CHROMAPRINT_VERSION=1.5.0
+ARG OPUS_VERSION=1.3.1
+ARG OPUSENC_VERSION=0.2.1
+ARG TWOLAME_VERSION=0.4.0
+ARG AUDIOFILE_VERSION=0.3.6
+ARG MPC_VERSION=0.1~r495-2
 
 RUN apk update \
   && apk add \
@@ -22,6 +22,7 @@ RUN apk update \
 	libvorbis-dev \
 	libsamplerate-dev \
 	libid3tag-dev \
+	libupnp-dev \
 	mpg123-dev \
 	flac-dev \
 	ffmpeg-dev \
@@ -47,6 +48,8 @@ RUN apk update \
 	libmms-dev \
 	icu-dev \
 	libnfs-dev \
+	expat-dev \
+	xz \
 	wget
 
 ADD https://github.com/tatsuz/musepack/archive/master.zip /
@@ -72,6 +75,10 @@ RUN tar xzf /wildmidi-${WILDMIDI_VERSION}.tar.gz -C / \
   && libtoolize --force \
   && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=ON . \
   && make DESTDIR=/build install \
+  && mkdir -p /build/etc/wildmidi \
+  && mkdir -p /build/usr/share/midi \
+  && cp cfg/wildmidi.cfg /build/etc/wildmidi/ \
+  && wget https://freepats.zenvoid.org/freepats-20060219.tar.xz -O - | tar xvJ -C /build/usr/share/midi/ \
   && cp -av /build/* /
 
 ADD https://github.com/acoustid/chromaprint/releases/download/v${CHROMAPRINT_VERSION}/chromaprint-${CHROMAPRINT_VERSION}.tar.gz /
@@ -123,11 +130,10 @@ RUN tar xzf /v${MPD_VERSION}.tar.gz -C / \
 ARG ALPINE_VERSION
 FROM alpine:$ALPINE_VERSION AS runner
 
-ARG S6_OVERLAY_VERSION
+ARG S6_OVERLAY_VERSION=v2.2.0.3
 
-# copied in most parts from https://github.com/VITIMan/docker-music-stack/blob/master/mpd
 # start on qnap with
-# docker run -d  --cpus ".2" --memory 256mb --cap-add SYS_NICE --net host -v var-lib-mpd:/var/lib/mpd -v /share/Music:/media/music:ro --device=/dev/snd:/dev/snd --name mpd-1 --restart always gutmensch/mpd:latest
+# docker run -d  --cpus ".5" --memory 256mb --cap-add SYS_NICE --net host -v var-lib-mpd:/var/lib/mpd -v /share/Music:/media/music:ro --device=/dev/snd:/dev/snd --name mpd-1 --restart always gutmensch/mpd:latest
 # and enable rt scheduling first on qnap with sysctl -w kernel.sched_rt_runtime_us=-1
 
 LABEL maintainer="@gutmensch https://github.com/gutmensch"
@@ -151,6 +157,7 @@ RUN apk -q update \
 	yajl \
 	libsndfile \
 	libsamplerate \
+	libupnp \
 	libvorbis \
 	faad2-libs \
 	sndio-libs \
@@ -175,17 +182,20 @@ RUN apk -q update \
 	ympd \
 	mpc \
 	alsa-utils \
+	expat \
+	ncurses \
     && rm -rf /var/cache/apk/* \
-    && mkdir -p /var/lib/mpd/playlists
+    && mkdir -p /var/lib/mpd/playlists \
+    && wget -O - https://gitlab.com/sonida/mpd-configure/-/archive/master/mpd-configure-master.tar.gz | tar xzv --strip-components=1 -C /usr/bin/ \
+    && mkdir -p /usr/bin/helpers \
+    && wget -O /usr/bin/helpers/alsa-capabilities  https://gitlab.com/sonida/alsa-capabilities/-/raw/72d0521459460e8a1af824c47e9a5fcc02110405/alsa-capabilities
 
 VOLUME ["/var/lib/mpd", "/media/music"]
 
 COPY ./manifest/ /
 COPY ./test/ /usr/build/test
 
-EXPOSE 6600
-EXPOSE 8800
-EXPOSE 8000
-EXPOSE 8866
+# 6600 mpd port, 8800 mpd http output, ympd ui 8866
+EXPOSE 6600 8800 8866
 
 ENTRYPOINT ["/init"]

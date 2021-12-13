@@ -1,0 +1,12 @@
+#!/usr/bin/with-contenv bash
+
+sed -i "s%__LOG_LEVEL__%${MPD_LOG_LEVEL:-default}%" /etc/mpd.conf.skel
+sed -i "s%__PORT__%${MPD_PORT:-6600}%" /etc/mpd.conf.skel
+sed -i "s%__MUSIC_DIRECTORY__%${MPD_MUSIC_DIRECTORY:-/media/music}%" /etc/mpd.conf.skel
+sed -i "s%__ALSA_NAME__%${MPD_ALSA_NAME:-AudioDevice}%" /etc/mpd.conf.skel
+sed -i "s%__ALSA_DEVICE__%${MPD_ALSA_DEVICE:-hw:0,0}%" /etc/mpd.conf.skel
+sed -i "s%__ALSA_BUFFER_TIME__%${MPD_ALSA_BUFFER_TIME:-250000}%" /etc/mpd.conf.skel
+sed -i "s%__ALSA_PERIOD_TIME__%${MPD_ALSA_PERIOD_TIME:-5084}%" /etc/mpd.conf.skel
+sed -i "s%__HTTPD_OUTPUT_PORT__%${MPD_HTTPD_OUTPUT_PORT:-8800}%" /etc/mpd.conf.skel
+sed -i "s%__HTTPD_OUTPUT_QUALITY__%${MPD_HTTPD_OUTPUT_QUALITY:-3.0}%" /etc/mpd.conf.skel
+mv /etc/mpd.conf.skel /etc/mpd.conf
