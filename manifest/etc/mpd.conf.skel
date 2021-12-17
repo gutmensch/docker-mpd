@@ -6,7 +6,6 @@ state_file		"/var/lib/mpd/mpd.state"
 sticker_file		"/var/lib/mpd/sticker.sql"
 log_level               "__LOG_LEVEL__"
 port                    "__PORT__"
-samplerate_converter    "Best Sinc Interpolator"
 filesystem_charset      "UTF-8"
 replaygain              "off"
 
@@ -18,10 +17,6 @@ decoder {
 decoder {
         plugin          "wildmidi"
         config_file     "/usr/share/midi/freepats/freepats.cfg"
-}
-
-input {
-        plugin "curl"
 }
 
 audio_output {
@@ -40,13 +35,14 @@ audio_output {
 audio_output {
         type                "httpd"
         name                "MPD HTTP Stream"
-        encoder             "lame"
+        encoder             "__HTTPD_OUTPUT_ENCODER__"
         port                "__HTTPD_OUTPUT_PORT__"
         # HiFi, home, or quiet listening, with best file size
         # -V 0 (~245 kbps), -V 1 (~225 kbps), -V 2 (~190 kbps) or -V 3 (~175 kbps) are recommended.
         # Portable: listening in noisy conditions, lower bitrate, smaller file size
         # -V 4 (~165 kbps), -V 5 (~130 kbps) or -V 6 (~115 kbps) are recommended.
         quality             "__HTTPD_OUTPUT_QUALITY__"
+        bitrate             "__HTTPD_OUTPUT_BITRATE__"
         always_on           "yes"
         tags                "yes"
 }
