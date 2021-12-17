@@ -1,12 +1,54 @@
 #!/usr/bin/with-contenv bash
 
-sed -i "s%__LOG_LEVEL__%${MPD_LOG_LEVEL:-default}%" /etc/mpd.conf.skel
-sed -i "s%__PORT__%${MPD_PORT:-6600}%" /etc/mpd.conf.skel
-sed -i "s%__MUSIC_DIRECTORY__%${MPD_MUSIC_DIRECTORY:-/media/music}%" /etc/mpd.conf.skel
-sed -i "s%__ALSA_NAME__%${MPD_ALSA_NAME:-AlsaDevice1}%" /etc/mpd.conf.skel
-sed -i "s%__ALSA_DEVICE__%${MPD_ALSA_DEVICE:-hw:0,0}%" /etc/mpd.conf.skel
-sed -i "s%__ALSA_BUFFER_TIME__%${MPD_ALSA_BUFFER_TIME:-400000}%" /etc/mpd.conf.skel
-sed -i "s%__ALSA_PERIOD_TIME__%${MPD_ALSA_PERIOD_TIME:-5084}%" /etc/mpd.conf.skel
-sed -i "s%__HTTPD_OUTPUT_PORT__%${MPD_HTTPD_OUTPUT_PORT:-8800}%" /etc/mpd.conf.skel
-sed -i "s%__HTTPD_OUTPUT_QUALITY__%${MPD_HTTPD_OUTPUT_QUALITY:-3.0}%" /etc/mpd.conf.skel
-mv /etc/mpd.conf.skel /etc/mpd.conf
+CONF_SKEL="${MPD_CONF_SKEL:-/etc/mpd.conf.skel}"
+CONF_TARGET="${MPD_CONF_TARGET:-/etc/mpd.conf}"
+
+# replace simple env vars in config
+sed -i "s%__LOG_LEVEL__%${MPD_LOG_LEVEL:-default}%" $CONF_SKEL
+sed -i "s%__PORT__%${MPD_PORT:-6600}%" $CONF_SKEL
+sed -i "s%__MUSIC_DIRECTORY__%${MPD_MUSIC_DIRECTORY:-/media/music}%" $CONF_SKEL
+sed -i "s%__ALSA_NAME__%${MPD_ALSA_NAME:-AlsaDevice1}%" $CONF_SKEL
+sed -i "s%__ALSA_DEVICE__%${MPD_ALSA_DEVICE:-hw:0,0}%" $CONF_SKEL
+sed -i "s%__ALSA_BUFFER_TIME__%${MPD_ALSA_BUFFER_TIME:-400000}%" $CONF_SKEL
+sed -i "s%__ALSA_PERIOD_TIME__%${MPD_ALSA_PERIOD_TIME:-5084}%" $CONF_SKEL
+sed -i "s%__HTTPD_OUTPUT_PORT__%${MPD_HTTPD_OUTPUT_PORT:-8800}%" $CONF_SKEL
+sed -i "s%__HTTPD_OUTPUT_ENCODER__%${MPD_HTTPD_OUTPUT_ENCODER:-lame}%" $CONF_SKEL
+
+# quality and bitrate are mutually exclusive settings
+# some codecs only support bitrate (e.g. opus)
+if [ -n "${MPD_HTTPD_OUTPUT_QUALITY}" -a -n "${MPD_HTTPD_OUTPUT_BITRATE}" ]; then
+  echo "httpd output only takes either quality or bitrate but not both. must provide at least one value."
+  exit 1
+fi
+
+if [ -n "${MPD_HTTPD_OUTPUT_QUALITY}" ]; then
+  sed -i "s%__HTTPD_OUTPUT_QUALITY__%${MPD_HTTPD_OUTPUT_QUALITY}%" $CONF_SKEL
+  sed -i '/[[:space:]]*bitrate[[:space:]]*"__HTTPD_OUTPUT_BITRATE__"/d' $CONF_SKEL
+elif [ -n "${MPD_HTTPD_OUTPUT_BITRATE}" ]; then
+  sed -i "s%__HTTPD_OUTPUT_BITRATE__%${MPD_HTTPD_OUTPUT_BITRATE}%" $CONF_SKEL
+  sed -i '/[[:space:]]*quality[[:space:]]*"__HTTPD_OUTPUT_QUALITY__"/d' $CONF_SKEL
+else
+  # assuming quality = 3.0 mode
+  sed -i "s%__HTTPD_OUTPUT_QUALITY__%3.0%" $CONF_SKEL
+  sed -i '/[[:space:]]*bitrate[[:space:]]*"__HTTPD_OUTPUT_BITRATE__"/d' $CONF_SKEL
+fi
+
+# resampler setting
+if [ "${MPD_RESAMPLER}" = "soxr" ]; then
+  cat <EOF>> $CONF_SKEL
+
+resampler {
+        plugin          "soxr"
+        quality         "very high"
+}
+EOF
+elif [ "${MPD_RESAMPLER}" = "libsamplerate" ]; then
+  cat <EOF>> $CONF_SKEL
+
+resampler {
+        plugin          "libsamplerate"
+        type            "0"
+}
+EOF
+
+mv $CONF_SKEL $CONF_TARGET
