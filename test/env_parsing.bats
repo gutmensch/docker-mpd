@@ -37,5 +37,5 @@ load helper
            MPD_HTTPD_OUTPUT_QUALITY=4.0 \
            MPD_RESAMPLER=libsamplerate \
            bash /etc/cont-init.d/01-configure-mpd"
-  [ "$(sed '/^$/d' /tmp/mpd.conf.2 | md5sum | awk '{print $1}')" = "5cdd7b20c43c5acce5c013619110fd09" ]
+  [ "$(sed '/^$/d' /tmp/mpd.conf.2 | md5sum | awk '{print $1}')" = "5ac7b62d378fba75271795f9813c8d42" ]
 }
