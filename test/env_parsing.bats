@@ -10,7 +10,7 @@ load helper
            MPD_PORT=6666 \
            MPD_MUSIC_DIRECTORY=/music \
            MPD_ALSA_NAME=AudioDevice \
-           MPD_ALSA_DEVICE=hw0:0 \
+           MPD_ALSA_DEVICE=hw:0,0 \
            MPD_ALSA_BUFFER_TIME=1000000 \
            MPD_ALSA_PERIOD_TIME=8000 \
            MPD_HTTPD_OUTPUT_ENCODER=opus \
@@ -18,7 +18,7 @@ load helper
            MPD_HTTPD_OUTPUT_BITRATE=128000 \
            MPD_RESAMPLER=soxr \
            bash /etc/cont-init.d/01-configure-mpd"
-  [ "$(md5sum /tmp/mpd.conf.1 | awk '{print $1}')" = "" ]
+  [ "$(sed '/^$/d' /tmp/mpd.conf.1 | md5sum | awk '{print $1}')" = "2e31932e93689d318f50b7cc292bc70b" ]
 }
 
 @test "test expected mpd.conf after env parsing - 2" {
@@ -29,7 +29,7 @@ load helper
            MPD_PORT=6600 \
            MPD_MUSIC_DIRECTORY=/media/music \
            MPD_ALSA_NAME=AudioDevice \
-           MPD_ALSA_DEVICE=hw0:0 \
+           MPD_ALSA_DEVICE=hw:0,0 \
            MPD_ALSA_BUFFER_TIME=100000 \
            MPD_ALSA_PERIOD_TIME=8000 \
            MPD_HTTPD_OUTPUT_ENCODER=lame \
@@ -37,5 +37,5 @@ load helper
            MPD_HTTPD_OUTPUT_QUALITY=4.0 \
            MPD_RESAMPLER=libsamplerate \
            bash /etc/cont-init.d/01-configure-mpd"
-  [ "$(md5sum /tmp/mpd.conf.2 | awk '{print $1}')" = "" ]
+  [ "$(sed '/^$/d' /tmp/mpd.conf.2 | md5sum | awk '{print $1}')" = "5cdd7b20c43c5acce5c013619110fd09" ]
 }

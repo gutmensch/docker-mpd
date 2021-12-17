@@ -3,7 +3,7 @@
 CONF_SKEL="${MPD_CONF_SKEL:-/etc/mpd.conf.skel}"
 CONF_TARGET="${MPD_CONF_TARGET:-/etc/mpd.conf}"
 GSED="$(which gsed)"
-SED="${GSED:-/usr/bin/sed}"
+SED="${GSED:-sed}"
 
 # replace simple env vars in config
 $SED -i -e "s%__LOG_LEVEL__%${MPD_LOG_LEVEL:-default}%" $CONF_SKEL
