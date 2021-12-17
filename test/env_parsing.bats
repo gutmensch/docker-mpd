@@ -18,7 +18,7 @@ load helper
            MPD_HTTPD_OUTPUT_BITRATE=128000 \
            MPD_RESAMPLER=soxr \
            bash /etc/cont-init.d/01-configure-mpd"
-  [ "$(md5sum /tmp/mpd.conf.1)" = "" ]
+  [ "$(md5sum /tmp/mpd.conf.1 | awk '{print $1}')" = "" ]
 }
 
 @test "test expected mpd.conf after env parsing - 2" {
@@ -37,5 +37,5 @@ load helper
            MPD_HTTPD_OUTPUT_QUALITY=4.0 \
            MPD_RESAMPLER=libsamplerate \
            bash /etc/cont-init.d/01-configure-mpd"
-  [ "$(md5sum /tmp/mpd.conf.2)" = "" ]
+  [ "$(md5sum /tmp/mpd.conf.2 | awk '{print $1}')" = "" ]
 }
