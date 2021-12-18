@@ -49,6 +49,9 @@ RUN apk update \
 	icu-dev \
 	libnfs-dev \
 	expat-dev \
+	fmt-dev \
+	liburing-dev \
+	pcre2-dev \
 	xz \
 	wget
 
@@ -184,6 +187,9 @@ RUN apk -q update \
 	alsa-utils \
 	expat \
 	ncurses \
+	fmt \
+	liburing \
+	pcre2 \
     && rm -rf /var/cache/apk/* \
     && mkdir -p /var/lib/mpd/playlists \
     && wget -O - https://gitlab.com/sonida/mpd-configure/-/archive/master/mpd-configure-master.tar.gz | tar xzv --strip-components=1 -C /usr/bin/ \
