@@ -43,6 +43,7 @@ audio_output {
         # -V 4 (~165 kbps), -V 5 (~130 kbps) or -V 6 (~115 kbps) are recommended.
         quality             "__HTTPD_OUTPUT_QUALITY__"
         bitrate             "__HTTPD_OUTPUT_BITRATE__"
+        format              "__HTTPD_OUTPUT_FORMAT__"
         always_on           "yes"
         tags                "yes"
 }

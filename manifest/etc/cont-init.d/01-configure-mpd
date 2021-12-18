@@ -5,6 +5,7 @@ CONF_TARGET="${MPD_CONF_TARGET:-/etc/mpd.conf}"
 GSED="$(which gsed)"
 SED="${GSED:-sed}"
 
+
 # replace simple env vars in config
 $SED -i -e "s%__LOG_LEVEL__%${MPD_LOG_LEVEL:-default}%" $CONF_SKEL
 $SED -i -e "s%__PORT__%${MPD_PORT:-6600}%" $CONF_SKEL
@@ -16,12 +17,14 @@ $SED -i -e "s%__ALSA_PERIOD_TIME__%${MPD_ALSA_PERIOD_TIME:-5084}%" $CONF_SKEL
 $SED -i -e "s%__HTTPD_OUTPUT_PORT__%${MPD_HTTPD_OUTPUT_PORT:-8800}%" $CONF_SKEL
 $SED -i -e "s%__HTTPD_OUTPUT_ENCODER__%${MPD_HTTPD_OUTPUT_ENCODER:-lame}%" $CONF_SKEL
 
+
 # quality and bitrate are mutually exclusive settings
 # some codecs only support bitrate (e.g. opus)
 if [ -n "${MPD_HTTPD_OUTPUT_QUALITY}" -a -n "${MPD_HTTPD_OUTPUT_BITRATE}" ]; then
   echo "httpd output only takes either quality or bitrate but not both. must provide at least one value."
   exit 1
 fi
+
 
 if [ -n "${MPD_HTTPD_OUTPUT_QUALITY}" ]; then
   $SED -i -e "s%__HTTPD_OUTPUT_QUALITY__%${MPD_HTTPD_OUTPUT_QUALITY}%" $CONF_SKEL
@@ -34,6 +37,14 @@ else
   $SED -i -e "s%__HTTPD_OUTPUT_QUALITY__%3.0%" $CONF_SKEL
   $SED -i -e '/[[:space:]]*bitrate[[:space:]]*"__HTTPD_OUTPUT_BITRATE__"/d' $CONF_SKEL
 fi
+
+
+if [ -n "${MPD_HTTPD_OUTPUT_FORMAT}" ]; then
+  $SED -i -e "s%__HTTPD_OUTPUT_FORMAT__%${MPD_HTTPD_OUTPUT_FORMAT}%" $CONF_SKEL
+else
+  $SED -i -e '/[[:space:]]*format[[:space:]]*"__HTTPD_OUTPUT_FORMAT__"/d' $CONF_SKEL
+fi
+
 
 # resampler setting
 if [ "${MPD_RESAMPLER}" = "soxr" ]; then
@@ -53,5 +64,6 @@ resampler {
 }
 EOF
 fi
+
 
 mv $CONF_SKEL $CONF_TARGET
