@@ -127,7 +127,7 @@ RUN tar xzf /v${MPD_VERSION}.tar.gz -C / \
   && cd /MPD-${MPD_VERSION} \
   && bash -c '[ -f autogen.sh ] && ./autogen.sh || true' \
   && bash -c '[ -f configure ] && ./configure --enable-dsd --prefix=/usr --sysconfdir=/etc --localstatedir=/var --runstatedir=/run && make DESTDIR=/build install || true' \
-  && bash -c '[ -f meson.build ] && meson --prefix=/usr --sysconfdir=/etc --localstatedir=/var build && cd build && ninja && ninja install || true' \
+  && bash -c '[ -f meson.build ] && meson --prefix=/usr --sysconfdir=/etc --localstatedir=/var build && cd build && ninja && ninja install && strip -g /build/usr/bin/mpd || true' \
   && mkdir -p /build/var/lib/mpd/playlists
 
 ARG ALPINE_VERSION
@@ -142,8 +142,8 @@ ARG S6_OVERLAY_VERSION=v2.2.0.3
 LABEL maintainer="@gutmensch https://github.com/gutmensch"
 
 # install s6 for mpd and ympd
-ADD "https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz" /tmp/
-RUN tar xzf /tmp/s6-overlay-amd64.tar.gz -C / \
+RUN wget "https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz" -O /tmp/s6-overlay-amd64.tar.gz \
+  && tar xzf /tmp/s6-overlay-amd64.tar.gz -C / \
   && rm /tmp/s6-overlay-amd64.tar.gz
 
 COPY --from=builder /build/ /
