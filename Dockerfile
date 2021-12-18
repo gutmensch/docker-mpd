@@ -133,7 +133,11 @@ RUN mkdir -p /build/usr/share/midi || true \
   && wget https://freepats.zenvoid.org/freepats-20060219.tar.xz -O - | tar xvJ -C /build/usr/share/midi/
 
 # cleanup
-RUN rm -rvf /build/usr/share/man/* /build/usr/lib/pkgconfig /build/usr/lib/cmake /build/usr/share/aclocal /build/usr/include
+RUN rm -rvf /build/usr/share/man/* /build/usr/lib/pkgconfig /build/usr/lib/cmake /build/usr/share/aclocal /build/usr/include \
+  && find /build/usr/bin -type f -executable -exec strip -g {} \; \
+  && find /build/usr/lib -type f -name "*.so.*" -exec strip -g {} \; \
+  && find /build/usr/lib -type f -name "*.la" -delete \
+  && find /build/usr/lib -type f -name "*.a" -delete
 
 ARG ALPINE_VERSION
 FROM alpine:$ALPINE_VERSION AS runner
