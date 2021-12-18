@@ -132,6 +132,9 @@ RUN tar xzf /v${MPD_VERSION}.tar.gz -C / \
 RUN mkdir -p /build/usr/share/midi || true \
   && wget https://freepats.zenvoid.org/freepats-20060219.tar.xz -O - | tar xvJ -C /build/usr/share/midi/
 
+# cleanup
+RUN rm -rvf /build/usr/share/man/* /build/usr/lib/pkgconfig /build/usr/lib/cmake /build/usr/share/aclocal /build/usr/include
+
 ARG ALPINE_VERSION
 FROM alpine:$ALPINE_VERSION AS runner
 
