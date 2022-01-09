@@ -142,15 +142,17 @@ RUN wget -nv https://github.com/tatsuz/musepack/archive/master.zip -O musepack_m
   && gpg --verify mpd-${MPD_VERSION}.tar.xz.sig mpd-${MPD_VERSION}.tar.xz \
   && tar xJvf /mpd-${MPD_VERSION}.tar.xz -C / \
   && export DESTDIR=/build \
-  && cd /MPD-${MPD_VERSION} \
+  && cd mpd-${MPD_VERSION} \
   && bash -c '[ -f autogen.sh ] && ./autogen.sh || true' \
   && bash -c '[ -f configure ] && ./configure --enable-dsd --prefix=/usr --sysconfdir=/etc --localstatedir=/var --runstatedir=/run && make DESTDIR=/build install || true' \
   && bash -c '[ -f meson.build ] && meson --prefix=/usr --sysconfdir=/etc --localstatedir=/var build && cd build && ninja && ninja install && strip -g /build/usr/bin/mpd || true' \
   && mkdir -p /build/var/lib/mpd/playlists \
+  && cd / \
 # \
 # FREEPATS \
   && mkdir -p /build/usr/share/midi || true \
   && wget -nv https://freepats.zenvoid.org/freepats-20060219.tar.xz -O - | tar xvJ -C /build/usr/share/midi/ \
+# \
 # CLEANUP \
   && rm -rvf /build/usr/share/man/* /build/usr/lib/pkgconfig /build/usr/lib/cmake /build/usr/share/aclocal /build/usr/include \
   && find /build/usr/bin -type f -executable -exec strip -g {} \; \
