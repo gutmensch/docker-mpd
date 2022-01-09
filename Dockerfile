@@ -10,6 +10,8 @@ ARG TWOLAME_VERSION=0.4.0
 ARG AUDIOFILE_VERSION=0.3.6
 ARG MPC_VERSION=0.1~r495-2
 
+WORKDIR /
+
 RUN apk update \
   && apk add \
 	alpine-sdk \
@@ -55,10 +57,9 @@ RUN apk update \
 	xz \
 	wget
 
-ADD https://github.com/tatsuz/musepack/archive/master.zip /
-RUN cd / \
-  && unzip master.zip \
-  && rm -f master.zip \
+RUN wget https://github.com/tatsuz/musepack/archive/master.zip -O musepack_master.zip \
+  && unzip musepack_master.zip \
+  && rm -f musepack_master.zip \
   && cd musepack-master \
   && wget "http://deb.debian.org/debian/pool/main/libm/libmpc/libmpc_${MPC_VERSION}.debian.tar.xz" \
   && tar xvf "libmpc_${MPC_VERSION}.debian.tar.xz" \
@@ -72,8 +73,8 @@ RUN cd / \
   && make DESTDIR=/build install \
   && cp -av /build/* /
 
-ADD https://github.com/Mindwerks/wildmidi/archive/wildmidi-${WILDMIDI_VERSION}.tar.gz /
-RUN tar xzf /wildmidi-${WILDMIDI_VERSION}.tar.gz -C / \
+RUN wget https://github.com/Mindwerks/wildmidi/archive/wildmidi-${WILDMIDI_VERSION}.tar.gz \
+  && tar xzf /wildmidi-${WILDMIDI_VERSION}.tar.gz -C / \
   && cd /wildmidi-wildmidi-${WILDMIDI_VERSION} \
   && libtoolize --force \
   && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=ON . \
@@ -83,23 +84,23 @@ RUN tar xzf /wildmidi-${WILDMIDI_VERSION}.tar.gz -C / \
   && cp cfg/wildmidi.cfg /build/etc/wildmidi/ \
   && cp -av /build/* /
 
-ADD https://github.com/acoustid/chromaprint/releases/download/v${CHROMAPRINT_VERSION}/chromaprint-${CHROMAPRINT_VERSION}.tar.gz /
-RUN tar xzf /chromaprint-${CHROMAPRINT_VERSION}.tar.gz -C / \
+RUN wget https://github.com/acoustid/chromaprint/releases/download/v${CHROMAPRINT_VERSION}/chromaprint-${CHROMAPRINT_VERSION}.tar.gz \
+  && tar xzf /chromaprint-${CHROMAPRINT_VERSION}.tar.gz -C / \
   && cd /chromaprint-v${CHROMAPRINT_VERSION} \
   && libtoolize --force \
   && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=ON . \
   && make DESTDIR=/build install \
   && cp -av /build/* /
 
-ADD https://archive.mozilla.org/pub/opus/opus-${OPUS_VERSION}.tar.gz /
-RUN tar xzf /opus-${OPUS_VERSION}.tar.gz -C / \
+RUN wget https://archive.mozilla.org/pub/opus/opus-${OPUS_VERSION}.tar.gz \
+  && tar xzf /opus-${OPUS_VERSION}.tar.gz -C / \
   && cd /opus-${OPUS_VERSION} \
   && ./configure --prefix=/usr --disable-static --disable-doc --disable-extra-programs --enable-custom-modes \
   && make DESTDIR=/build install \
   && cp -av /build/* /
 
-ADD https://archive.mozilla.org/pub/opus/libopusenc-${OPUSENC_VERSION}.tar.gz /
-RUN tar xzf /libopusenc-${OPUSENC_VERSION}.tar.gz -C / \
+RUN wget https://archive.mozilla.org/pub/opus/libopusenc-${OPUSENC_VERSION}.tar.gz \
+  && tar xzf /libopusenc-${OPUSENC_VERSION}.tar.gz -C / \
   && cd /libopusenc-${OPUSENC_VERSION} \
   && ./configure --prefix=/usr --disable-static --disable-doc --disable-examples \
   && make DESTDIR=/build install \
@@ -112,17 +113,18 @@ RUN wget http://downloads.sourceforge.net/twolame/twolame-${TWOLAME_VERSION}.tar
   && make DESTDIR=/build install \
   && cp -av /build/* /
 
-ADD https://audiofile.68k.org/audiofile-${AUDIOFILE_VERSION}.tar.gz /
 ENV CXXFLAGS=-fpermissive
-RUN tar xzf /audiofile-${AUDIOFILE_VERSION}.tar.gz -C / \
+RUN wget https://audiofile.68k.org/audiofile-${AUDIOFILE_VERSION}.tar.gz \
+  && tar xzf /audiofile-${AUDIOFILE_VERSION}.tar.gz -C / \
   && cd /audiofile-${AUDIOFILE_VERSION} \
   && ./configure --prefix=/usr --disable-docs --disable-examples --disable-static \
   && make DESTDIR=/build install \
   && cp -av /build/* /
 
-ADD https://github.com/MusicPlayerDaemon/MPD/archive/v${MPD_VERSION}.tar.gz /
 ENV DESTDIR=/build
-RUN tar xzf /v${MPD_VERSION}.tar.gz -C / \
+RUN bash -c "wget https://www.musicpd.org/download/mpd/${MPD_VERSION%.*}/mpd-${MPD_VERSION}.tar.xz{,.sig}" \
+  && gpg --verify mpd-${MPD_VERSION}.tar.xz.sig mpd-${MPD_VERSION}.tar.xz \
+  && tar xJvf /mpd-${MPD_VERSION}.tar.xz -C / \
   && cd /MPD-${MPD_VERSION} \
   && bash -c '[ -f autogen.sh ] && ./autogen.sh || true' \
   && bash -c '[ -f configure ] && ./configure --enable-dsd --prefix=/usr --sysconfdir=/etc --localstatedir=/var --runstatedir=/run && make DESTDIR=/build install || true' \

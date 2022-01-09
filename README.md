@@ -17,7 +17,7 @@ Goals:
 
 ## Usage
 ```
-docker run -d  --cpus "1" --memory 256mb --cap-add SYS_NICE --net host -e MPD_RESAMPLER=soxr -e MPD_HTTPD_OUTPUT_FORMAT='*:*:1' -e MPD_HTTPD_OUTPUT_BITRATE=96000 -e MPD_ALSA_DEVICE="iec958:CARD=U0xccd0x77,DEV=0" -v var-lib-mpd:/var/lib/mpd -e MPD_HTTPD_OUTPUT_ENCODER=opus -e MPD_ALSA_BUFFER_TIME=400000 -e MPD_ALSA_NAME="USB Audio" -e MPD_RESAMPLER=soxr -e MPD_HTTPD_OUTPUT_FORMAT='*:*:1' -v /share/Music:/media/music:ro --device=/dev/snd:/dev/snd --name mpd-1 --restart always registry.n-os.org:5000/mpd:0.23.5
+docker run -d  --cpus "2" --memory 256mb --cap-add SYS_NICE --net host -e MPD_RESAMPLER=soxr -e MPD_HTTPD_OUTPUT_ENCODER=opus -e MPD_HTTPD_OUTPUT_FORMAT='*:*:1' -e MPD_HTTPD_OUTPUT_BITRATE=96000 -e MPD_ALSA_DEVICE="iec958:CARD=U0xccd0x77,DEV=0" -e MPD_ALSA_BUFFER_TIME=400000 -e MPD_ALSA_NAME="USB Audio" -v var-lib-mpd:/var/lib/mpd -v /share/Music:/media/music:ro --device=/dev/snd:/dev/snd --name mpd-1 --restart always registry.n-os.org:5000/mpd:0.23.5
 ```
 
 ## Docker Env Variables (defaults marked bold)
