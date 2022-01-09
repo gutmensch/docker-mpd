@@ -93,7 +93,7 @@ RUN wget -nv https://github.com/tatsuz/musepack/archive/master.zip -O musepack_m
 # CHROMAPRINT \
   && wget -nv https://github.com/acoustid/chromaprint/releases/download/v${CHROMAPRINT_VERSION}/chromaprint-${CHROMAPRINT_VERSION}.tar.gz \
   && tar xzf /chromaprint-${CHROMAPRINT_VERSION}.tar.gz -C / \
-  && cd /chromaprint-v${CHROMAPRINT_VERSION} \
+  && cd /chromaprint-${CHROMAPRINT_VERSION} \
   && libtoolize --force \
   && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=ON . \
   && make DESTDIR=/build install \
