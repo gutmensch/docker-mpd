@@ -19,7 +19,7 @@ RUN apk update \
 	autoconf \
 	automake \
 	libtool \
-	gpg \
+	gnupg \
 	meson \
 	libmpdclient-dev \
 	libvorbis-dev \
