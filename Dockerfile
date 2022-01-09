@@ -2,13 +2,16 @@ ARG ALPINE_VERSION=3.15
 FROM alpine:$ALPINE_VERSION AS builder
 
 ARG MPD_VERSION=0.23.5
+
 ARG WILDMIDI_VERSION=0.4.4
-ARG CHROMAPRINT_VERSION=1.5.0
+ARG CHROMAPRINT_VERSION=1.5.1
 ARG OPUS_VERSION=1.3.1
 ARG OPUSENC_VERSION=0.2.1
 ARG TWOLAME_VERSION=0.4.0
 ARG AUDIOFILE_VERSION=0.3.6
 ARG MPC_VERSION=0.1~r495-2
+
+WORKDIR /
 
 RUN apk update \
   && apk add \
@@ -17,7 +20,8 @@ RUN apk update \
 	autoconf \
 	automake \
 	libtool \
-        meson \
+	gnupg \
+	meson \
 	libmpdclient-dev \
 	libvorbis-dev \
 	libsamplerate-dev \
@@ -55,12 +59,12 @@ RUN apk update \
 	xz \
 	wget
 
-ADD https://github.com/tatsuz/musepack/archive/master.zip /
-RUN cd / \
-  && unzip master.zip \
-  && rm -f master.zip \
+# MUSEPACK
+RUN wget -nv https://github.com/tatsuz/musepack/archive/master.zip -O musepack_master.zip \
+  && unzip musepack_master.zip \
+  && rm -f musepack_master.zip \
   && cd musepack-master \
-  && wget "http://deb.debian.org/debian/pool/main/libm/libmpc/libmpc_${MPC_VERSION}.debian.tar.xz" \
+  && wget -nv "http://deb.debian.org/debian/pool/main/libm/libmpc/libmpc_${MPC_VERSION}.debian.tar.xz" \
   && tar xvf "libmpc_${MPC_VERSION}.debian.tar.xz" \
   && for i in $(cat debian/patches/series); do echo $i; patch -p1 < debian/patches/$i; done \
   && libtoolize --force \
@@ -70,10 +74,12 @@ RUN cd / \
   && autoconf \
   && ./configure --prefix=/usr \
   && make DESTDIR=/build install \
-  && cp -av /build/* /
-
-ADD https://github.com/Mindwerks/wildmidi/archive/wildmidi-${WILDMIDI_VERSION}.tar.gz /
-RUN tar xzf /wildmidi-${WILDMIDI_VERSION}.tar.gz -C / \
+  && cp -av /build/* / \
+  && cd / \
+# \
+# WILDMIDI \
+  && wget -nv https://github.com/Mindwerks/wildmidi/archive/wildmidi-${WILDMIDI_VERSION}.tar.gz \
+  && tar xzf /wildmidi-${WILDMIDI_VERSION}.tar.gz -C / \
   && cd /wildmidi-wildmidi-${WILDMIDI_VERSION} \
   && libtoolize --force \
   && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=ON . \
@@ -81,59 +87,75 @@ RUN tar xzf /wildmidi-${WILDMIDI_VERSION}.tar.gz -C / \
   && mkdir -p /build/etc/wildmidi \
   && mkdir -p /build/usr/share/midi \
   && cp cfg/wildmidi.cfg /build/etc/wildmidi/ \
-  && cp -av /build/* /
-
-ADD https://github.com/acoustid/chromaprint/releases/download/v${CHROMAPRINT_VERSION}/chromaprint-${CHROMAPRINT_VERSION}.tar.gz /
-RUN tar xzf /chromaprint-${CHROMAPRINT_VERSION}.tar.gz -C / \
-  && cd /chromaprint-v${CHROMAPRINT_VERSION} \
+  && cp -av /build/* / \
+  && cd / \
+# \
+# CHROMAPRINT \
+  && wget -nv https://github.com/acoustid/chromaprint/releases/download/v${CHROMAPRINT_VERSION}/chromaprint-${CHROMAPRINT_VERSION}.tar.gz \
+  && tar xzf /chromaprint-${CHROMAPRINT_VERSION}.tar.gz -C / \
+  && cd /chromaprint-${CHROMAPRINT_VERSION} \
   && libtoolize --force \
   && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=ON . \
   && make DESTDIR=/build install \
-  && cp -av /build/* /
-
-ADD https://archive.mozilla.org/pub/opus/opus-${OPUS_VERSION}.tar.gz /
-RUN tar xzf /opus-${OPUS_VERSION}.tar.gz -C / \
+  && cp -av /build/* / \
+  && cd / \
+# \
+# OPUS \
+  && wget -nv https://archive.mozilla.org/pub/opus/opus-${OPUS_VERSION}.tar.gz \
+  && tar xzf /opus-${OPUS_VERSION}.tar.gz -C / \
   && cd /opus-${OPUS_VERSION} \
   && ./configure --prefix=/usr --disable-static --disable-doc --disable-extra-programs --enable-custom-modes \
   && make DESTDIR=/build install \
-  && cp -av /build/* /
-
-ADD https://archive.mozilla.org/pub/opus/libopusenc-${OPUSENC_VERSION}.tar.gz /
-RUN tar xzf /libopusenc-${OPUSENC_VERSION}.tar.gz -C / \
+  && cp -av /build/* / \
+  && cd / \
+# \
+# OPUSENC \
+  && wget -nv https://archive.mozilla.org/pub/opus/libopusenc-${OPUSENC_VERSION}.tar.gz \
+  && tar xzf /libopusenc-${OPUSENC_VERSION}.tar.gz -C / \
   && cd /libopusenc-${OPUSENC_VERSION} \
   && ./configure --prefix=/usr --disable-static --disable-doc --disable-examples \
   && make DESTDIR=/build install \
-  && cp -av /build/* /
-
-RUN wget http://downloads.sourceforge.net/twolame/twolame-${TWOLAME_VERSION}.tar.gz -O /twolame-${TWOLAME_VERSION}.tar.gz \
+  && cp -av /build/* / \
+  && cd / \
+# \
+# TWOLAME \
+  && wget -nv http://downloads.sourceforge.net/twolame/twolame-${TWOLAME_VERSION}.tar.gz -O /twolame-${TWOLAME_VERSION}.tar.gz \
   && tar xzf /twolame-${TWOLAME_VERSION}.tar.gz -C / \
   && cd /twolame-${TWOLAME_VERSION} \
   && ./configure --prefix=/usr --disable-static \
   && make DESTDIR=/build install \
-  && cp -av /build/* /
-
-ADD https://audiofile.68k.org/audiofile-${AUDIOFILE_VERSION}.tar.gz /
-ENV CXXFLAGS=-fpermissive
-RUN tar xzf /audiofile-${AUDIOFILE_VERSION}.tar.gz -C / \
+  && cp -av /build/* / \
+  && cd / \
+# \
+# AUDIOFILE \
+  && wget -nv https://audiofile.68k.org/audiofile-${AUDIOFILE_VERSION}.tar.gz \
+  && tar xzf /audiofile-${AUDIOFILE_VERSION}.tar.gz -C / \
   && cd /audiofile-${AUDIOFILE_VERSION} \
+  && export CXXFLAGS=-fpermissive \
   && ./configure --prefix=/usr --disable-docs --disable-examples --disable-static \
   && make DESTDIR=/build install \
-  && cp -av /build/* /
-
-ADD https://github.com/MusicPlayerDaemon/MPD/archive/v${MPD_VERSION}.tar.gz /
-ENV DESTDIR=/build
-RUN tar xzf /v${MPD_VERSION}.tar.gz -C / \
-  && cd /MPD-${MPD_VERSION} \
+  && cp -av /build/* / \
+  && cd / \
+# \
+# MPD \
+  && gpg -v --keyserver hkps://pgp.mit.edu --receive-keys 0392335A78083894A4301C43236E8A58C6DB4512 \
+  && bash -c "wget -nv https://www.musicpd.org/download/mpd/${MPD_VERSION%.*}/mpd-${MPD_VERSION}.tar.xz{,.sig}" \
+  && gpg --verify mpd-${MPD_VERSION}.tar.xz.sig mpd-${MPD_VERSION}.tar.xz \
+  && tar xJvf /mpd-${MPD_VERSION}.tar.xz -C / \
+  && export DESTDIR=/build \
+  && cd mpd-${MPD_VERSION} \
   && bash -c '[ -f autogen.sh ] && ./autogen.sh || true' \
   && bash -c '[ -f configure ] && ./configure --enable-dsd --prefix=/usr --sysconfdir=/etc --localstatedir=/var --runstatedir=/run && make DESTDIR=/build install || true' \
   && bash -c '[ -f meson.build ] && meson --prefix=/usr --sysconfdir=/etc --localstatedir=/var build && cd build && ninja && ninja install && strip -g /build/usr/bin/mpd || true' \
-  && mkdir -p /build/var/lib/mpd/playlists
-
-RUN mkdir -p /build/usr/share/midi || true \
-  && wget https://freepats.zenvoid.org/freepats-20060219.tar.xz -O - | tar xvJ -C /build/usr/share/midi/
-
-# cleanup
-RUN rm -rvf /build/usr/share/man/* /build/usr/lib/pkgconfig /build/usr/lib/cmake /build/usr/share/aclocal /build/usr/include \
+  && mkdir -p /build/var/lib/mpd/playlists \
+  && cd / \
+# \
+# FREEPATS \
+  && mkdir -p /build/usr/share/midi || true \
+  && wget -nv https://freepats.zenvoid.org/freepats-20060219.tar.xz -O - | tar xvJ -C /build/usr/share/midi/ \
+# \
+# CLEANUP \
+  && rm -rvf /build/usr/share/man/* /build/usr/lib/pkgconfig /build/usr/lib/cmake /build/usr/share/aclocal /build/usr/include \
   && find /build/usr/bin -type f -executable -exec strip -g {} \; \
   && find /build/usr/lib -type f -name "*.so.*" -exec strip -g {} \; \
   && find /build/usr/lib -type f -name "*.la" -delete \

@@ -116,7 +116,6 @@ String getDockerTag() {
 
 void setBuildStatus(message, state) {
   def repoUrl = sh(script: 'git config --get remote.origin.url', returnStdout: true).trim()
-  echo repoUrl
   step([
       $class: "GitHubCommitStatusSetter",
       reposSource: [$class: "ManuallyEnteredRepositorySource", url: repoUrl],
